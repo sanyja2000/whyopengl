@@ -7,7 +7,7 @@
 {"name":"Noteblock5","note":"E4","type":"noteblock13","pos":[-2.8,0,-2],"rot":[0,0,0],"scale":0.3},
 {"name":"Noteblock6","note":"F4","type":"noteblock13","pos":[-2.0,0,-2],"rot":[0,0,0],"scale":0.3},
 {"name":"Noteblock7","note":"F#4","type":"noteblock13","pos":[-1.2,0,-2],"rot":[0,0,0],"scale":0.3},
-{"name":"Noteblock8","note":"G4","type":"noteblock13","pos":[-0.4,0,-2],"rot":[0,0,0],"scale":0.3},
+{"name":"Noteblock8","note":"G4","type":"noteblock13","pos":[-0.4,0,-2],"rot":[0,0.74,0],"scale":0.3},
 {"name":"Noteblock9","note":"G#4","type":"noteblock13","pos":[0.4,0,-2],"rot":[0,0,0],"scale":0.3},
 {"name":"Noteblock10","note":"A4","type":"noteblock13","pos":[1.2,0,-2],"rot":[0,0,0],"scale":0.3},
 {"name":"Noteblock11","note":"A#4","type":"noteblock13","pos":[2.0,0,-2],"rot":[0,0,0],"scale":0.3},
