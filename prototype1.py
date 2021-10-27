@@ -115,7 +115,7 @@ class Game:
         self.noteblocks = []
 
         self.mp = MapLoader("maps/test1.json")
-        print(self.mp.objects)
+        #print(self.mp.objects)
         for o in self.mp.objects:
             if isinstance(o, Noteblock13):
                 o.model.SetPosition(np.array([o.model.pos[0], self.notes.index(o.note)*0.2, o.model.pos[2]]))
@@ -150,6 +150,16 @@ class Game:
             self.lastPlayed = now
             self.noteblocks[self.noteBlockCounter].lastPlayed = now
             self.noteBlockCounter = (self.noteBlockCounter+1)%len(self.noteblocks)
+
+        if b'm' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'm'] == 1:
+            self.noteblocks = []
+            self.mp = MapLoader("maps/test1.json")
+            #print(self.mp.objects)
+            for o in self.mp.objects:
+                if isinstance(o, Noteblock13):
+                    o.model.SetPosition(np.array([o.model.pos[0], self.notes.index(o.note)*0.2, o.model.pos[2]]))
+                    o.sample = (np.sin(2*np.pi*np.arange(44100*1)*self.audioHandler.notes[self.notes[self.notes.index(o.note)]]/44100)).astype(np.float32)
+                    self.noteblocks.append(o)
 
         if self.inputHandler.keysDown[b' '] == 0:
             self.noteBlockCounter = 0

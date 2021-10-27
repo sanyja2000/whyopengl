@@ -9,8 +9,10 @@ class MapLoader:
         self.prefabHandler = prefabHandler()
         with open(filename, "r") as f:
             self.JSONContent = json.loads("".join(f.readlines()))
-            for x in self.JSONContent["objectList"]:
-                if x["type"]=="noteblock13":
-                    self.objects.append(Noteblock13(self.prefabHandler,x["name"],x["note"],x["pos"],x["rot"],x["scale"]))
-                if x["type"]=="mapObject":
-                    self.objects.append(Map(self.prefabHandler,x["file"],x["texture"]))
+            for obj in self.JSONContent["objectList"]:
+                if obj["type"]=="noteblock13":
+                    self.objects.append(Noteblock13(self.prefabHandler,obj))
+                if obj["type"]=="mapObject":
+                    self.objects.append(Map(self.prefabHandler,obj))
+                if obj["type"]=="door":
+                    self.objects.append(Door(self.prefabHandler,obj))
