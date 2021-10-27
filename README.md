@@ -9,13 +9,14 @@ Packages needed to install:
 
 ```pip install numpy Pillow pyrr pyaudio```
 
-If pyaudio doesn't install you can try installing it via pipwin:
+If the command above fails, you have to run the command again, and try to install pyaudio with pipwin:
 ```
+pip install numpy Pillow pyrr
 pip install pipwin
 pipwin install pyaudio
 ```
 
-## On linux
+## On Linux
 For glut to work you might need to install freeglut3-dev:
 
 ```sudo apt-get install freeglut3-dev```
