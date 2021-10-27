@@ -3,6 +3,8 @@ A simple opengl project created in python.
 
 # Installation
 
+The project requires Python 3.6 or newer.
+
 Packages needed to install:
 
 ```pip install numpy Pillow pyrr pyaudio```
