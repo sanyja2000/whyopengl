@@ -40,12 +40,6 @@ def GLCheckError():
             break
         print("[OpenGL Error] ",err)
 
-
-class Noteblock:
-    def __init__(self):
-        self.lastPlayed = 0
-        self.model = Object3D("res/noteblock1.obj","res/noteblock.png").Clone()
-
 class Game:
     def __init__(self):
         glutInit()
@@ -178,11 +172,11 @@ class Game:
         glutSetWindowTitle("FPS: "+str(self.FPSCounter.FPS)+" delta: "+str(self.FPSCounter.deltaTime)+" bullets: "+str(len(self.bulletModels)))
         self.renderer.Clear()
 
-        self.player.xAng = self.inputHandler.mouseX/(self.windowSize[0]/2)*1.57-1.57
-        self.player.yAng = constrain(self.inputHandler.mouseY/(self.windowSize[1]/2)*1.57-1.57,-math.pi/2,math.pi/2)
+        self.player.xAng = self.inputHandler.mouseX/(self.windowSize[0]/2)*1.57-self.inputHandler.mouseXoffset
+        self.player.yAng = constrain(self.inputHandler.mouseY/(self.windowSize[1]/2)*1.57,-math.pi/2,math.pi/2)
         
         self.player.moveWithKeys(self.inputHandler.keysDown,self.FPSCounter.deltaTime)
-        self.player.update()
+        self.player.update(self.FPSCounter.deltaTime)
         viewMat = np.matmul(self.proj,self.player.camModel)
 
         """

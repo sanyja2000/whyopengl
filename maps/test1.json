@@ -1,5 +1,5 @@
 {"objectList":[
-{"name":"Map1","type":"mapObject","file":"res/room1n.obj","texture":"res/wall_top.png","pos":[0,0,0],"rot":[0,0,0]},
+{"name":"Map1","type":"mapObject","file":"res/room2.obj","texture":"res/wall_top.png","pos":[0,10,0],"rot":[0,0,0]},
 {"name":"Noteblock1","note":"C4","puzzleId":"01","type":"noteblock13","pos":[-6,0,-2],"rot":[0,0,0],"scale":0.3},
 {"name":"Noteblock2","note":"C#4","puzzleId":"01","type":"noteblock13","pos":[-5.2,0,-2],"rot":[0,0,0],"scale":0.3},
 {"name":"Noteblock3","note":"D4","puzzleId":"01","type":"noteblock13","pos":[-4.4,0,-2],"rot":[0,0,0],"scale":0.3},

@@ -4,6 +4,7 @@ class InputHandler:
     def __init__(self):
         self.mouseX = 0
         self.mouseY = 0
+        self.mouseXoffset = 3.14*1.5
         self.windowSize = [0,0]
         self.mouseCatched = True
         self.keysDown = {b'a':0,b's':0,b'd':0,b'w':0,b' ':0}

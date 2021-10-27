@@ -30,6 +30,8 @@ class Map:
         self.name = ""
         self.model = ph.loadFile(props["file"],props["texture"],textureRepeat=True)
         self.model.SetScale(10)
+        self.model.SetPosition(np.array(props["pos"]))
+        self.model.SetRotation(np.array(props["rot"]))
     def draw(self,shaderhandler,renderer,viewMat):
         self.model.DrawWithShader(shaderhandler.getShader("map"),renderer,viewMat)
 
