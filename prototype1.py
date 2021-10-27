@@ -179,10 +179,10 @@ class Game:
         self.player.update(self.FPSCounter.deltaTime)
         viewMat = np.matmul(self.proj,self.player.camModel)
 
-        """
+        
         for b in self.bulletModels:
             b.SetPosition(np.array([b.pos[0]-10*b.vx*self.FPSCounter.deltaTime,b.pos[1]-10*b.vy*self.FPSCounter.deltaTime,b.pos[2]-10*b.vz*self.FPSCounter.deltaTime]))
-            b.DrawWithShader(self.shader,self.renderer,viewMat)
+            b.DrawWithShader(self.shaderHandler.getShader("default"),self.renderer,viewMat)
 
             if dist(b.pos,self.player.pos)>10:
                 self.bulletModels.remove(b)
@@ -196,7 +196,7 @@ class Game:
                     self.audioHandler.playNote(noteblock.note,1)
                     self.bulletModels.remove(b)
                     break
-           
+        """   
         for i in range(len(self.noteblocks)):
             self.noteblocks[i].model.DrawWithShader(self.noteblockShader,self.renderer,viewMat,options={"u_Time":now,"u_LastPlayed":self.noteblocks[i].lastPlayed})
         self.mapModel.DrawWithShader(self.roomShader,self.renderer,viewMat)
