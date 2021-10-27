@@ -26,6 +26,7 @@ Now you should be able to run the project.
 
 ## On Windows
 For glut to work you need to download and install PyOpenGl and PyOpenGl-accelerate from one of the Unofficial Windows Binaries for Python Extension Packages websites 
+
 (link for one: https://www.lfd.uci.edu/~gohlke/pythonlibs/).
 
 After downloading you have to install the downloaded wheel files with:
