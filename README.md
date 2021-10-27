@@ -15,15 +15,18 @@ pipwin install pyaudio
 
 ## On linux
 For glut to work you might need to install freeglut3-dev:
+
 ```sudo apt-get install freeglut3-dev```
 
 After that you have to install 2 more packages via pip:
+
 ```pip install PyOpenGl PyOpenGl_accelerated```
 
 Now you should be able to run the project.
 
 ## On Windows
-For glut to work you need to download and install PyOpenGl and PyOpenGl-accelerate from one of the Unofficial Windows Binaries for Python Extension Packages websites (link for one: https://www.lfd.uci.edu/~gohlke/pythonlibs/).
+For glut to work you need to download and install PyOpenGl and PyOpenGl-accelerate from one of the Unofficial Windows Binaries for Python Extension Packages websites 
+(link for one: https://www.lfd.uci.edu/~gohlke/pythonlibs/).
 
 After downloading you have to install the downloaded wheel files with:
 
