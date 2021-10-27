@@ -39,7 +39,7 @@ class Noteblock13:
     def __init__(self,ph,props):
         self.puzzleId = props["puzzleId"]
         self.name = props["name"]
-        self.model = ph.loadFile("res/noteblock1.obj","res/noteblock.png")
+        self.model = ph.loadFile("res/noteblock1.obj","res/fire.png")
         self.model.SetScale(props["scale"])
         self.model.SetPosition(np.array(props["pos"]))
         self.model.SetRotation(np.array(props["rot"]))

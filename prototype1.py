@@ -52,7 +52,7 @@ class Game:
         else:
             glutInitContextVersion (2, 1)
         glutInitContextProfile (GLUT_COMPATIBILITY_PROFILE)
-        self.windowSize = [1024,768]
+        self.windowSize = [1280,720]
         glutInitWindowSize(self.windowSize[0], self.windowSize[1])
         glutInitWindowPosition(0, 0)
         self.window = glutCreateWindow("OpenGL Coding Practice")
@@ -79,9 +79,9 @@ class Game:
         self.shaderHandler = ShaderHandler()
         
         if OPENGL_VERSION == 3:
-            self.shaderHandler.loadShader("default","shaders/3.3/vertex_new.shader","shaders/2.1/fragment_new.shader")
-            self.shaderHandler.loadShader("map","shaders/3.3/vertex_new_room.shader","shaders/2.1/fragment_new_room.shader")
-            self.shaderHandler.loadShader("noteblock","shaders/3.3/vertex_noteblock.shader","shaders/2.1/fragment_noteblock.shader")
+            self.shaderHandler.loadShader("default","shaders/3.3/vertex_new.shader","shaders/3.3/fragment_new.shader")
+            self.shaderHandler.loadShader("map","shaders/3.3/vertex_new_room.shader","shaders/3.3/fragment_new_room.shader")
+            self.shaderHandler.loadShader("noteblock","shaders/3.3/vertex_noteblock.shader","shaders/3.3/fragment_noteblock.shader")
         else:
             self.shaderHandler.loadShader("default","shaders/2.1/vertex_new.shader","shaders/2.1/fragment_new.shader")
             self.shaderHandler.loadShader("map","shaders/2.1/vertex_new_room.shader","shaders/2.1/fragment_new_room.shader")
