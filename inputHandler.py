@@ -14,6 +14,10 @@ class InputHandler:
             glutWarpPointer(int(self.windowSize[0]/2), int(self.windowSize[1]/2))
     def activeMouseEventHandler(self,*args):
         pass
+    def passiveMouseEventHandler21(self,*args):
+        if self.mouseCatched:
+            self.mouseX = args[0]*3
+            self.mouseY = args[1]
     def keyDownHandler(self, *args):
         if(args[0]==b'\x1b'):
             glutLeaveMainLoop()

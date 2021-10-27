@@ -5,6 +5,7 @@
 {"name":"Noteblock3","note":"D4","puzzleId":"01","type":"noteblock13","pos":[-4.4,0,-2],"rot":[0,0,0],"scale":0.3},
 {"name":"Noteblock4","note":"D#4","puzzleId":"01","type":"noteblock13","pos":[-3.6,0,-2],"rot":[0,0,0],"scale":0.3},
 {"name":"Noteblock5","note":"E4","puzzleId":"01","type":"noteblock13","pos":[-2.8,0,-2],"rot":[0,0,0],"scale":0.3},
+{"type":"comment", "values":[
 {"name":"Noteblock6","note":"F4","puzzleId":"01","type":"noteblock13","pos":[-2.0,0,-2],"rot":[0,0,0],"scale":0.3},
 {"name":"Noteblock7","note":"F#4","puzzleId":"01","type":"noteblock13","pos":[-1.2,0,-2],"rot":[0,0,0],"scale":0.3},
 {"name":"Noteblock8","note":"G4","puzzleId":"01","type":"noteblock13","pos":[-0.4,0,-2],"rot":[0,0.74,0],"scale":0.3},
@@ -12,7 +13,8 @@
 {"name":"Noteblock10","note":"A4","puzzleId":"01","type":"noteblock13","pos":[1.2,0,-2],"rot":[0,0,0],"scale":0.3},
 {"name":"Noteblock11","note":"A#4","puzzleId":"01","type":"noteblock13","pos":[2.0,0,-2],"rot":[0,0,0],"scale":0.3},
 {"name":"Noteblock12","note":"B4","puzzleId":"01","type":"noteblock13","pos":[2.8,0,-2],"rot":[0,0,0],"scale":0.3},
-{"name":"Noteblock13","note":"C5","puzzleId":"01","type":"noteblock13","pos":[3.6,0,-2],"rot":[0,0,0],"scale":0.3},
+{"name":"Noteblock13","note":"C5","puzzleId":"01","type":"noteblock13","pos":[3.6,0,-2],"rot":[0,0,0],"scale":0.3}
+]},
 {"name":"Door1","puzzleId":"01","type":"door","pos":[14,3,0],"rot":[0,0,0],"scale":1},
-{"name":"Puzzle1","type":"basicPuzzle","puzzleId":"01"}
+{"name":"Puzzle1","type":"puzzle","puzzleId":"01","solveFunction":"puzzle01"}
 ]}

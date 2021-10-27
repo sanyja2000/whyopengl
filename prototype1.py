@@ -50,7 +50,13 @@ class Game:
     def __init__(self):
         glutInit()
         glutInitDisplayMode(GLUT_RGBA)
-        glutInitContextVersion (3, 3)
+
+        OPENGL_VERSION = 3
+
+        if OPENGL_VERSION == 3:
+            glutInitContextVersion (3, 3)
+        else:
+            glutInitContextVersion (2, 1)
         glutInitContextProfile (GLUT_COMPATIBILITY_PROFILE)
         self.windowSize = [1024,768]
         glutInitWindowSize(self.windowSize[0], self.windowSize[1])
@@ -77,9 +83,15 @@ class Game:
         glClearColor(0.52,0.80,0.92,1.0)
 
         self.shaderHandler = ShaderHandler()
-        self.shaderHandler.loadShader("default","shaders/vertex_new.shader","shaders/fragment_new.shader")
-        self.shaderHandler.loadShader("map","shaders/vertex_new_room.shader","shaders/fragment_new_room.shader")
-        self.shaderHandler.loadShader("noteblock","shaders/vertex_noteblock.shader","shaders/fragment_noteblock.shader")
+        
+        if OPENGL_VERSION == 3:
+            self.shaderHandler.loadShader("default","shaders/3.3/vertex_new.shader","shaders/2.1/fragment_new.shader")
+            self.shaderHandler.loadShader("map","shaders/3.3/vertex_new_room.shader","shaders/2.1/fragment_new_room.shader")
+            self.shaderHandler.loadShader("noteblock","shaders/3.3/vertex_noteblock.shader","shaders/2.1/fragment_noteblock.shader")
+        else:
+            self.shaderHandler.loadShader("default","shaders/2.1/vertex_new.shader","shaders/2.1/fragment_new.shader")
+            self.shaderHandler.loadShader("map","shaders/2.1/vertex_new_room.shader","shaders/2.1/fragment_new_room.shader")
+            self.shaderHandler.loadShader("noteblock","shaders/2.1/vertex_noteblock.shader","shaders/2.1/fragment_noteblock.shader")    
         
         #print("Error: ")
         #print(glGetProgramInfoLog(self.shader.RendererId))
