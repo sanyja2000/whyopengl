@@ -1,3 +1,4 @@
+# Unnecesary file, delete later, use prefabHandler(simplePlane, texture) instead
 from renderer import *
 import numpy as np
 import pyrr

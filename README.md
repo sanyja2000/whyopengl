@@ -38,3 +38,7 @@ Once you have downloaded the files for your respective python version, you have 
 `pip install PyOpenGL_accelerate-3.1.5-cp38-cp38-win_amd64.whl` - for Python 3.8, change file to the downloaded
 
 Now you should be able to run the project.
+
+### To run the project
+For now, start 
+```python prototype2.py```

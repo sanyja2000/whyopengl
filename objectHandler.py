@@ -55,3 +55,22 @@ class Object3D:
     def DistanceTo(self,vec):
         d = (vec[0]-self.pos[0])**2+(vec[1]-self.pos[1])**2+(vec[2]-self.pos[2])**2
         return d**0.5
+
+class prefabHandler:
+    def __init__(self):
+        self.loadedFiles = []
+        self.loadedObjects = []
+        self.emptyObj = Object3D(None,texture="res/1px.png")
+    def loadFile(self,_filename,_texture,textureRepeat=False):
+        if _filename in self.loadedFiles:
+            index = self.loadedFiles.index(_filename)
+            o = self.loadedObjects[index].Clone()
+            if(hasattr(self.loadedObjects[index],"texture") and _texture != self.loadedObjects[index].texture.FilePath):
+                o.texture = Texture(_texture)
+            return o
+        o = Object3D(_filename,texture=_texture,textureRepeat=textureRepeat)
+        self.loadedFiles.append(_filename)
+        self.loadedObjects.append(o)
+        return o
+    def empty(self):
+        return self.emptyObj.Clone()

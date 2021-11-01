@@ -34,7 +34,7 @@ def processObjFile(filename):
                 quads = False
                 break
     if len(texcoords) == 0:
-        print("No texture coordinates found")
+        print("No texture coordinates found for file:"+filename)
         texAvailable = False
     if quads:
         n = 0

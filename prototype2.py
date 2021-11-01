@@ -129,14 +129,7 @@ class Game:
         
         self.noteblocks = []
 
-        self.mp = MapLoader("maps/test1.json")
-        #print(self.mp.objects)
-        for o in self.mp.objects:
-            if isinstance(o, Notepiece13):
-                o.model.SetPosition(np.array([o.model.pos[0], self.notes.index(o.note)*0.2, o.model.pos[2]]))
-                o.sample = (np.sin(2*np.pi*np.arange(44100*1)*self.audioHandler.notes[self.notes[self.notes.index(o.note)]]/44100)).astype(np.float32)
-                self.noteblocks.append(o)
-        self.noteBlockCounter = 0
+        self.mp = MapLoader("maps/test2.json")
 
         glutMainLoop()
     def errorMsg(self, *args):
@@ -148,52 +141,17 @@ class Game:
         glViewport(0,0,self.windowSize[0],self.windowSize[1])
         self.inputHandler.changeWindowSize(self.windowSize)
     def mouseClicked(self,*args):
-        if len(self.bulletModels)<6 and args[0] == 0 and args[1] == 0:
-            b = self.bulletModelPrefab.Clone()
-            b.SetScale(0.1)
-            b.noteDir = 1
-            b.vx = math.sin(-self.player.xAng)
-            b.vz = math.cos(self.player.xAng)
-            b.vy = math.sin(self.player.yAng)
-            b.SetRotation(np.array([self.player.yAng,self.player.xAng,0]))
-            b.SetPosition(np.array(self.player.camPosition)*-1+np.array([0,-0.3,0]))
-            self.bulletModels.append(b)
-        if len(self.bulletModels)<6 and args[0] == 2  and args[1] == 0:
-            b = self.bulletModelPrefab.Clone()
-            b.SetScale(0.1)
-            b.noteDir = -1
-            b.vx = math.sin(-self.player.xAng)
-            b.vz = math.cos(self.player.xAng)
-            b.vy = math.sin(self.player.yAng)
-            b.SetRotation(np.array([self.player.yAng,self.player.xAng,0]))
-            b.SetPosition(np.array(self.player.camPosition)*-1+np.array([0,-0.3,0]))
-            self.bulletModels.append(b)
+        pass
     def showScreen(self):
         now = time.perf_counter()
-        popupText = ""
-        if self.inputHandler.keysDown[b' '] == 1 and now-self.lastPlayed>self.timeDelay:
-            self.audioHandler.playNote(self.noteblocks[self.noteBlockCounter].note,1)
-            self.lastPlayed = now
-            self.noteblocks[self.noteBlockCounter].lastPlayed = now
-            self.noteBlockCounter = (self.noteBlockCounter+1)%len(self.noteblocks)
+        glutSetWindowTitle("FPS: "+str(self.FPSCounter.FPS)+" delta: "+str(self.FPSCounter.deltaTime)+" bullets: "+str(len(self.bulletModels)))
+    
 
         if b'm' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'm'] == 1:
-            self.noteblocks = []
-            self.mp = MapLoader("maps/test1.json")
-            #print(self.mp.objects)
-            for o in self.mp.objects:
-                if isinstance(o, Noteblock13):
-                    o.model.SetPosition(np.array([o.model.pos[0], self.notes.index(o.note)*0.2, o.model.pos[2]]))
-                    o.sample = (np.sin(2*np.pi*np.arange(44100*1)*self.audioHandler.notes[self.notes[self.notes.index(o.note)]]/44100)).astype(np.float32)
-                    self.noteblocks.append(o)
-        if dist(self.player.pos,self.mp.getObject("Button1").model.pos) < 1:
-            popupText = "Press E to solve puzzle"
-            if b'e' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'e'] == 1:
-                self.mp.puzzle.trySolve()
+            self.mp = MapLoader("maps/test2.json")
+
         
-        if self.inputHandler.keysDown[b' '] == 0:
-            self.noteBlockCounter = 0
-        glutSetWindowTitle("FPS: "+str(self.FPSCounter.FPS)+" delta: "+str(self.FPSCounter.deltaTime)+" bullets: "+str(len(self.bulletModels)))
+
         self.renderer.Clear()
 
         self.player.xAng = self.inputHandler.mouseX/(self.windowSize[0]/2)*1.57-self.inputHandler.mouseXoffset
@@ -203,35 +161,34 @@ class Game:
         self.player.update(self.FPSCounter.deltaTime)
         viewMat = np.matmul(self.proj,self.player.camModel)
 
-        
-        for b in self.bulletModels:
-            b.SetPosition(np.array([b.pos[0]-10*b.vx*self.FPSCounter.deltaTime,b.pos[1]-10*b.vy*self.FPSCounter.deltaTime,b.pos[2]-10*b.vz*self.FPSCounter.deltaTime]))
-            b.DrawWithShader(self.shaderHandler.getShader("default"),self.renderer,viewMat)
+        popupText = ""
 
-            if dist(b.pos,self.player.pos)>10:
-                self.bulletModels.remove(b)
-                continue
-            for noteblock in self.noteblocks:
-                if dist(b.pos, noteblock.model.pos)<0.5:
-                    newNote = self.notes[(self.notes.index(noteblock.note)+b.noteDir)%len(self.notes)]
-                    noteblock.note = newNote#self.notes[self.notes.index(noteblock.note)+1]
-                    noteblock.lastPlayed = now
-                    noteblock.model.SetPosition([-6+self.noteblocks.index(noteblock)*0.8,0+self.notes.index(noteblock.note)*0.2,-2])
-                    self.audioHandler.playNote(noteblock.note,1)
-                    self.bulletModels.remove(b)
-                    break
-        """   
-        for i in range(len(self.noteblocks)):
-            self.noteblocks[i].model.DrawWithShader(self.noteblockShader,self.renderer,viewMat,options={"u_Time":now,"u_LastPlayed":self.noteblocks[i].lastPlayed})
-        self.mapModel.DrawWithShader(self.roomShader,self.renderer,viewMat)
-        """
+        solvedPuzzles = 0
+        puzzleCount = 0
         for i in self.mp.objects:
             i.draw(self.shaderHandler,self.renderer,viewMat)
+            if (isinstance(i, PuzzlePlane) or isinstance(i, SnakePlane)) and dist(i.model.pos,self.player.pos)<1 and not i.isInteracting:
+                popupText = "Press E to interact"
+                if b'e' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'e'] == 1:
+                    i.isInteracting = True
+                    self.inputHandler.interactingWith = i
+            if (isinstance(i, PuzzlePlane) or isinstance(i, SnakePlane)) and i.isInteracting:
+                popupText = i.interactText
+                if b'q' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'q'] == 1:
+                    i.isInteracting = False
+                    self.inputHandler.interactingWith = None
+            if (isinstance(i,PuzzlePlane) or isinstance(i, SnakePlane)):
+                puzzleCount += 1
+                solvedPuzzles += i.solved
             if hasattr(i, "update"):
                 i.update(self.FPSCounter.deltaTime)
-        
-        self.fontHandler.drawText(popupText,-0.4,-0.6,0.05,self.renderer)
+
+        if solvedPuzzles == puzzleCount:
+            self.mp.getObject("Door1").open()
+
+        self.fontHandler.drawText(popupText,-1*len(popupText)/50,-0.6,0.05,self.renderer)
         glutSwapBuffers()
+        self.inputHandler.updateKeysDown()
         self.FPSCounter.drawFrame(now)
 
 g = Game()

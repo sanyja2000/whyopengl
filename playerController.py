@@ -2,7 +2,8 @@ import math,pyrr, numpy as np
 
 class Player:
     def __init__(self):
-        self.pos = [-6.75,20,-6.75]
+        self.pos = [-6.75,0,-6.75]
+        #self.pos = [-6.75,30,-6.75] <- default, uncomment to fall on spawn
         self.rot = [0,0,0]
         self.vel = [0,0,0]
         self.maxVelocity = 5
@@ -13,7 +14,11 @@ class Player:
         self.grounded = False
         self.xAng = 0
         self.yAng = 0
-    def moveWithKeys(self,keysDown,deltaTime):
+    def moveWithKeys(self,inputHandler,deltaTime):
+        keysDown = inputHandler.keysDown
+        if not inputHandler.interactingWith is None:
+            inputHandler.interactingWith.moveWithKeys(inputHandler,deltaTime)
+            return
         if not self.grounded:
             return
         self.vel[0] = self.maxVelocity*math.cos(-self.xAng)*deltaTime
@@ -41,17 +46,24 @@ class Player:
         if self.pos[2] < -1*cubeW:
             self.pos[2] = -1*cubeW
     def update(self,deltaTime):
+        inAHole = False
+        if self.pos[0] > 5.5 and self.pos[0] < 7 and self.pos[2] > 5.5 and self.pos[2] < 7:
+            inAHole = True
+            self.grounded = False
         if not self.grounded:
             self.vel[1]+=-0.02*deltaTime
-            if self.vel[1] > self.maxVelocity:
-                self.vel[1] = self.maxVelocity
-            if self.vel[1] < -1*self.maxVelocity:
-                self.vel[1] = -1*self.maxVelocity
+            if self.vel[1] > self.maxVelocity*3:
+                self.vel[1] = self.maxVelocity*3
+            if self.vel[1] < -1*self.maxVelocity*3:
+                self.vel[1] = -1*self.maxVelocity*3
             self.pos[1]+=self.vel[1]
-            if self.pos[1] < 0:
+            if self.pos[1] < 0 and not inAHole:
                 print("grounded")
+                self.vel[1] = 0
                 self.pos[1] = 0
                 self.grounded = True
+            if self.pos[1] < -7:
+                self.pos = [-6.75,30,-6.75]
             
         if self.model != None:
             self.model.SetPosition(self.pos)

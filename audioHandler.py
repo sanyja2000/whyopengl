@@ -1,5 +1,29 @@
 import pyaudio, time, numpy as np
 from threading import Thread
+import math
+
+TWELVTHTWO = 2**(1/12)
+
+def sign(n):
+    if n>0:
+        return 1
+    if n<0:
+        return -1
+    return 0
+
+def mysin(n):
+    return sign(math.sin(n))#math.sin(n)+math.sin(n*TWELVTHTWO**4)
+
+def npsin(arr):
+    out = []
+    for x in arr:
+        out.append(mysin(x))
+    return np.array(out)
+
+def sinwave(range,duration,note):
+    fs = 44100
+    tempo = 0.5
+    return  (npsin(2*np.pi*np.arange(fs*duration*tempo)*note/fs)).astype(np.float32)
 
 class AudioHandler:
     def __init__(self):
@@ -23,8 +47,9 @@ class AudioHandler:
         #self.stream.start_stream()
     def _threadNote(self):
         self.stream.write(self.currentlyPlaying)
-    def playNote(self,note, dur, volume=0.5):
-        samples = (np.sin(2*np.pi*np.arange(self.fs*dur*self.tempo)*self.notes[note]/self.fs)).astype(np.float32)
+    def playNote(self,note, dur, volume=0.2):
+        #samples = (np.sin(2*np.pi*np.arange(self.fs*dur*self.tempo)*self.notes[note]/self.fs)).astype(np.float32)
+        samples = sinwave(1,dur,self.notes[note])
         self.currentlyPlaying = volume*samples
         self.music_thread = Thread(target=self._threadNote)
         self.music_thread.start()
