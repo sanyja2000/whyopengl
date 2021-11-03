@@ -53,6 +53,7 @@ class Door:
         self.puzzleId = props["puzzleId"]
         self.name = props["name"]
         self.scale = props["scale"]
+        self.sound = props["sound"]
         self.opened = False
         self.openPercent = 0
         self.leftModel = ph.loadFile("res/trapdoor2.obj","res/wall_top.png",textureRepeat=True)
@@ -78,7 +79,7 @@ class Door:
             #self.leftModel.SetPosition(self.leftModel.defaultPos)
             #self.rightModel.SetPosition(self.rightModel.defaultPos)
             self.opened = False
-    def update(self,deltaTime):
+    def update(self,deltaTime,audioHandler):
         if self.opened and self.openPercent<1:
             self.openPercent += 1*deltaTime
             if self.openPercent > 1:
@@ -184,14 +185,15 @@ class PuzzlePlane:
         self.model.SetPosition(np.array(props["pos"])+np.array([0,2.01,0])*props["scale"])
         self.model.SetRotation(np.array(props["rot"])+np.array([-0.785,-1.57,0]))
         
-        
         self.holderModel = ph.loadFile("res/puzzleHolder.obj","res/puzzleHolderTestFail.png")
         self.holderModel.textureFile = "res/puzzleHolderTestFail.png"
         self.holderModel.SetScale(props["scale"])
         self.holderModel.SetPosition(np.array(props["pos"]))
         self.holderModel.SetRotation(np.array(props["rot"]))
         
+        self.sound = props["sound"]
         self.solved = False
+        self.playedSound = False
         self.isInteracting = False
         with open(props["mapfile"],"r") as f:
             self.mapfile = f.read().split("\n")
@@ -202,6 +204,9 @@ class PuzzlePlane:
         self.sqrttwo = 1.4142135
         self.boxScale = 1/self.dimensions*0.9
         self.rotationOffset = [math.cos(self.model.rot[1]+3.14),1,math.sin(self.model.rot[1]+3.14)]
+
+        self.justMoved = False
+
         self.restart()
 
     def draw(self,shaderhandler,renderer,viewMat):
@@ -211,13 +216,17 @@ class PuzzlePlane:
             for mod in yline:
                 if not mod is None:
                     mod.draw(shaderhandler,renderer,viewMat)
-    def update(self,deltaTime):
+    def update(self,deltaTime,audioHandler):
+        if self.justMoved:
+            audioHandler.playSound("res/audio/puzzle_move.wav")
+            self.justMoved = False
         if self.solved and self.holderModel.textureFile == "res/puzzleHolderTestFail.png":
             self.holderModel.textureFile = "res/puzzleHolderTestSuccess.png"
             self.holderModel.texture = Texture("res/puzzleHolderTestSuccess.png")
             
     def restart(self):
         self.solved = False
+        self.playedSound = False
         self.holderModel.textureFile = "res/puzzleHolderTestFail.png"
         self.holderModel.texture = Texture("res/puzzleHolderTestFail.png")
         self.minigameModels = []
@@ -279,6 +288,7 @@ class PuzzlePlane:
                 self.minigameModels[self.dimensions-player.y][self.dimensions-player.x] = None
                 player.moveTo(newPos[0],newPos[1])
                 self.minigameModels[self.dimensions-newPos[1]][self.dimensions-newPos[0]] = player
+                self.justMoved = True
 
 class SnakePlane:
     def __init__(self,ph,props):
@@ -328,7 +338,7 @@ class SnakePlane:
             for mod in yline:
                 if not mod is None:
                     mod.draw(shaderhandler,renderer,viewMat)
-    def update(self,deltaTime):
+    def update(self,deltaTime,audioHandler):
         if self.isInteracting:
             now = time.perf_counter()
             if now-self.lastMove>0.5:

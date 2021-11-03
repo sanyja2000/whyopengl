@@ -1,29 +1,13 @@
 import pyaudio, time, numpy as np
+import wave
 from threading import Thread
 import math
 
-TWELVTHTWO = 2**(1/12)
-
-def sign(n):
-    if n>0:
-        return 1
-    if n<0:
-        return -1
-    return 0
-
-def mysin(n):
-    return sign(math.sin(n))#math.sin(n)+math.sin(n*TWELVTHTWO**4)
-
-def npsin(arr):
-    out = []
-    for x in arr:
-        out.append(mysin(x))
-    return np.array(out)
 
 def sinwave(range,duration,note):
     fs = 44100
     tempo = 0.5
-    return  (npsin(2*np.pi*np.arange(fs*duration*tempo)*note/fs)).astype(np.float32)
+    return  (np.sin(2*np.pi*np.arange(fs*duration*tempo)*note/fs)).astype(np.float32)
 
 class AudioHandler:
     def __init__(self):
@@ -36,6 +20,7 @@ class AudioHandler:
                         )#,stream_callback=self.callback)
         self.notes = {}
         self.ch = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
+        self.wavefiles = []
         lench = len(self.ch)
         #C1 = 65.40639132514967/2Hz
         curr = 65.40639132514967/2
@@ -47,6 +32,21 @@ class AudioHandler:
         #self.stream.start_stream()
     def _threadNote(self):
         self.stream.write(self.currentlyPlaying)
+    def playFile(self, filename):
+        self.wavefiles.append(wave.open(filename, 'rb'))
+        wf = self.wavefiles[-1]
+        stream = p.open(format=self.p.get_format_from_width(wf.getsampwidth()),
+                        channels=wf.getnchannels(),
+                        rate=wf.getframerate(),
+                        output=True,
+                        stream_callback=self.fileCallback)
+        # start the stream (4)
+        stream.start_stream()
+        # wait for stream to finish (5)
+        # stop stream (6)
+        #stream.stop_stream()
+        #stream.close()
+        #wf.close()
     def playNote(self,note, dur, volume=0.2):
         #samples = (np.sin(2*np.pi*np.arange(self.fs*dur*self.tempo)*self.notes[note]/self.fs)).astype(np.float32)
         samples = sinwave(1,dur,self.notes[note])
@@ -65,9 +65,15 @@ class AudioHandler:
     def callback(self,in_data,frame_count,time_info,status):
         data = []#self.currentlyPlaying.tobytes()
         return (data, pyaudio.paContinue)
+    def fileCallback(in_data, frame_count, time_info, status):
+        data = wf.readframes(frame_count)
+        return (data, pyaudio.paContinue)
 
 if __name__== '__main__':
     AH = AudioHandler()
+    
+    """
+    
 
     melody = ["A3","C4","D4","D4","D4","E4","F4","F4","F4","G4","E4","E4","D4","C4","C4","D4"]
     bass = ["E3","A3","G3","G3","G3","A3","C4","C4","C4","D4","A3","A3","G3","A3","A3","G3"]
@@ -75,4 +81,4 @@ if __name__== '__main__':
     for n in range(len(melody)):
         AH.playNote(melody[n],dur[n])
         time.sleep(0.1*dur[n]*AH.tempo)
-
+    """

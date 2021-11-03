@@ -8,7 +8,7 @@ import time
 from renderer import VertexBuffer, IndexBuffer, VertexArray, VertexBufferLayout, Shader, Renderer, Texture, Camera, FPSCounter, ShaderHandler
 from inputHandler import InputHandler
 from playerController import Player
-from audioHandler import AudioHandler
+from simpleAudioHandler import AudioHandler
 from plane import *
 from objloader import processObjFile
 from objectHandler import Object3D
@@ -101,10 +101,6 @@ class Game:
         self.fontHandler = FontHandler(self.shaderHandler.getShader("font"))
 
         self.audioHandler = AudioHandler()
-    
-
-        self.notes = ["C4","C#4","D4","D#4","E4","F4","F#4","G4","G#4","A4","A#4","B4","C5"]
-        
         
             
         self.bulletModelPrefab = Object3D("res/bullet1.obj","res/bullet1.png")
@@ -159,12 +155,19 @@ class Game:
         self.player.yAng = constrain(self.inputHandler.mouseY/(self.windowSize[1]/2)*1.57,-math.pi/2,math.pi/2)
         
         self.player.moveWithKeys(self.inputHandler,self.FPSCounter.deltaTime)
+        if self.player.distanceTraveled - self.player.lastWalkSound > 1.5:
+            self.player.lastWalkSound = self.player.distanceTraveled
+            self.audioHandler.playSound("res/audio/walksound.wav")
         self.player.update(self.FPSCounter.deltaTime)
+        if self.player.fallSound:
+            self.audioHandler.playSound("res/audio/fallsound.wav")
+            self.player.fallSound = False
         viewMat = np.matmul(self.proj,self.player.camModel)
 
         popupText = ""
 
         solvedPuzzles = 0
+        playingSound = 0
         puzzleCount = 0
         for i in self.mp.objects:
             i.draw(self.shaderHandler,self.renderer,viewMat)
@@ -181,11 +184,19 @@ class Game:
             if (isinstance(i,PuzzlePlane) or isinstance(i, SnakePlane)):
                 puzzleCount += 1
                 solvedPuzzles += i.solved
+                if i.solved and not i.playedSound:
+                    self.audioHandler.playSound(i.sound)
+                    i.playedSound = True
+                playingSound += self.audioHandler.isStillPlaying(i.sound)
             if hasattr(i, "update"):
-                i.update(self.FPSCounter.deltaTime)
+                i.update(self.FPSCounter.deltaTime,self.audioHandler)
 
         if solvedPuzzles == puzzleCount:
-            self.mp.getObject("Door1").open()
+            door = self.mp.getObject("Door1")
+            if not door.opened and playingSound == 0:
+                self.audioHandler.playSound(door.sound)
+                door.open()
+            
 
         self.fontHandler.drawText(popupText,-1*len(popupText)/50,-0.6,0.05,self.renderer)
         glutSwapBuffers()
