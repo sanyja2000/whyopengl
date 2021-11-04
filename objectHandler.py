@@ -28,7 +28,11 @@ class Object3D:
         self.texture.Bind()
         shader.SetUniform1i("u_Texture",0)
         for key in options:
-            shader.SetUniform1f(key,options[key])
+            val = key.split(",")
+            if len(val)>1 and val[0] == "3fv":
+                shader.SetUniform3fv(val[1],options[key])
+            else:
+                shader.SetUniform1f(key,options[key])
         mvp = np.transpose(np.matmul(viewMat,self.modelMat))        
         shader.SetUniformMat4f("u_MVP", mvp)
         renderer.Draw(self.va,self.ib,shader)

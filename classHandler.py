@@ -16,7 +16,7 @@ class Map:
         self.model.SetPosition(np.array(props["pos"]))
         self.model.SetRotation(np.array(props["rot"]))
     def draw(self,shaderhandler,renderer,viewMat):
-        self.model.DrawWithShader(shaderhandler.getShader("map"),renderer,viewMat)
+        self.model.DrawWithShader(shaderhandler.getShader("map"),renderer,viewMat,options={"u_Time":time.perf_counter(),"3fv,clearedPoints":np.array([[-5,-10.0,-5],[5,-10.0,-5]])})
 
 class Noteblock13:
     def __init__(self,ph,props):
@@ -119,12 +119,12 @@ class Button:
         
 class Decoration:
     def __init__(self,ph,props):
-        self.puzzleId = props["puzzleId"]
         self.name = props["name"]
         self.model = ph.loadFile(props["file"],props["texture"])
         self.model.SetScale(props["scale"])
         self.model.SetPosition(np.array(props["pos"]))
         self.model.SetRotation(np.array(props["rot"]))
+        self.model.defaultPosition = np.array(props["pos"])
         self.shaderName = "default"
         if("transparent" in props):
             self.shaderName = "default_transparent"
@@ -185,8 +185,8 @@ class PuzzlePlane:
         self.model.SetPosition(np.array(props["pos"])+np.array([0,2.01,0])*props["scale"])
         self.model.SetRotation(np.array(props["rot"])+np.array([-0.785,-1.57,0]))
         
-        self.holderModel = ph.loadFile("res/puzzleHolder.obj","res/puzzleHolderTestFail.png")
-        self.holderModel.textureFile = "res/puzzleHolderTestFail.png"
+        self.holderModel = ph.loadFile("res/puzzleHolder.obj","res/sandstoneTexture.png")
+        self.holderModel.textureFile = "res/sandstoneTexture.png"
         self.holderModel.SetScale(props["scale"])
         self.holderModel.SetPosition(np.array(props["pos"]))
         self.holderModel.SetRotation(np.array(props["rot"]))
@@ -227,8 +227,8 @@ class PuzzlePlane:
     def restart(self):
         self.solved = False
         self.playedSound = False
-        self.holderModel.textureFile = "res/puzzleHolderTestFail.png"
-        self.holderModel.texture = Texture("res/puzzleHolderTestFail.png")
+        self.holderModel.textureFile = "res/sandstoneTexture.png"
+        self.holderModel.texture = Texture("res/sandstoneTexture.png")
         self.minigameModels = []
         ph = self.prefabHandler
         for y in range(self.dimensions):

@@ -3,7 +3,7 @@ import math,pyrr, numpy as np
 class Player:
     def __init__(self):
         self.pos = [-6.75,0,-6.75]
-        self.pos = [-6.75,30,-6.75] #<- default, uncomment to fall on spawn
+        #self.pos = [-6.75,30,-6.75] #<- default, uncomment to fall on spawn
         self.rot = [0,0,0]
         self.vel = [0,0,0]
         self.maxVelocity = 5

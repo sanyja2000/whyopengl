@@ -98,6 +98,10 @@ class Shader:
     def SetUniformMat4f(self,name, mat):
         glUniformMatrix4fv(self.GetUniformLocation(name), 1, GL_FALSE, mat)
     
+    def SetUniform3fv(self,name,arr):
+        glUniform3fv(self.GetUniformLocation(name),len(arr),arr)
+
+
     def Bind(self):
         shaders.glUseProgram(self.RendererId)
 

@@ -4,13 +4,14 @@ layout(location=0) out vec4 color;
 in vec2 v_TexCoord;
 varying vec3 v_position;
 varying vec3 v_normal;
+varying vec3 lightPos;
 
 uniform sampler2D u_Texture;
 
 void main(){
     vec4 texColor = texture(u_Texture, v_TexCoord);
     
-    vec3 lightPos = vec3(0.0,4.0,3.0);
+    //vec3 lightPos = vec3(0.0,4.0,3.0);
 
      vec3 lightDir = normalize(lightPos-v_position);
       vec3 norm = v_normal;
