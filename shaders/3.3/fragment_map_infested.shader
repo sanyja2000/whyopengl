@@ -8,7 +8,8 @@ varying vec3 v_normal;
 
 uniform sampler2D u_Texture;
 uniform float u_Time;
-uniform vec3 clearedPoints[2];
+uniform float numPoints;
+uniform vec4 clearedPoints[20];
 
 float rand(vec2 c){
 	return fract(sin(dot(c.xy ,vec2(12.9898,78.233))) * 43758.5453);
@@ -78,12 +79,12 @@ void main(){
 
     //float pointR = min(0.1+pNoise(v_TexCoord*200.0+circlePos/20.0, 3),0.3)*(sin(u_Time)+1.5)/2.0;
 
-    for(int i=0;i<2;i++){
+    for(int i=0;i<numPoints;i++){
         //vec3 clearedPoint = vec3(-5,-10.0,-5)/10.0;
-        vec3 clearedPoint = clearedPoints[i]/10.0;
+        vec4 clearedPoint = clearedPoints[i]/10.0;
         float pointR = 0.2;
 
-        if(distance(clearedPoint,v_position)<pointR){
+        if(distance(clearedPoint.xyz,v_position)<clearedPoint.w){
             noiseVal = 1.0;
             break;
         }

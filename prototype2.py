@@ -147,6 +147,11 @@ class Game:
         crystal.model.SetRotation(np.array([0,now*3,0]))
         crystal.model.SetPosition(crystal.model.defaultPosition + np.array([0,math.sin(now)*0.1,0]))
 
+
+        mapObj = self.mp.getObject("Map1")
+        if mapObj:
+            mapObj.clearedPoints = np.array([[-5,-10.0,-5,2+math.sin(now)],[5,-10.0,-5,2]])
+
         if b'm' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'm'] == 1:
             self.mp = MapLoader("maps/test2.json")
 

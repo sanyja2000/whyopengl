@@ -10,13 +10,24 @@ from puzzles import *
 class Map:
     def __init__(self,ph,props):
         self.objFile = props["file"]
-        self.name = ""
+        self.name = props["name"]
         self.model = ph.loadFile(props["file"],props["texture"],textureRepeat=True)
         self.model.SetScale(10)
         self.model.SetPosition(np.array(props["pos"]))
         self.model.SetRotation(np.array(props["rot"]))
+        # vec4 points, (x, y, z, radius) for sphere which is cleared
+        # maximum of 5 points
+        self.maxPoints = np.ones((5,4))
+        self.clearedPoints = np.array([[-5,-10.0,-5,2],[5,-10.0,-5,2]])
     def draw(self,shaderhandler,renderer,viewMat):
-        self.model.DrawWithShader(shaderhandler.getShader("map"),renderer,viewMat,options={"u_Time":time.perf_counter(),"3fv,clearedPoints":np.array([[-5,-10.0,-5],[5,-10.0,-5]])})
+        points = []
+        for x in range(len(self.maxPoints)):
+            if x<len(self.clearedPoints):
+                points.append(self.clearedPoints[x])
+            else:
+                points.append(self.maxPoints[x])
+        parameters = {"u_Time":time.perf_counter(),"4fv,clearedPoints":np.array(points),"numPoints":len(self.clearedPoints)}
+        self.model.DrawWithShader(shaderhandler.getShader("map"),renderer,viewMat,options=parameters)
 
 class Noteblock13:
     def __init__(self,ph,props):

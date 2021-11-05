@@ -31,6 +31,8 @@ class Object3D:
             val = key.split(",")
             if len(val)>1 and val[0] == "3fv":
                 shader.SetUniform3fv(val[1],options[key])
+            elif len(val)>1 and val[0] == "4fv":
+                shader.SetUniform4fv(val[1],options[key])
             else:
                 shader.SetUniform1f(key,options[key])
         mvp = np.transpose(np.matmul(viewMat,self.modelMat))        
