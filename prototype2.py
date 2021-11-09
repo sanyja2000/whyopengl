@@ -45,7 +45,7 @@ class Game:
         glutInit()
         glutInitDisplayMode(GLUT_RGBA)
 
-        OPENGL_VERSION = 2
+        OPENGL_VERSION = 3
 
         if OPENGL_VERSION == 3:
             glutInitContextVersion (3, 3)
@@ -150,8 +150,15 @@ class Game:
 
         mapObj = self.mp.getObject("Map1")
         if mapObj:
-            mapObj.clearedPoints = np.array([[-5,-10.0,-5,2+math.sin(now)],[5,-10.0,-5,2]])
-
+            temparr = []
+            for x in self.mp.objects:
+                if isinstance(x, PuzzlePlane) and x.solved:
+                    temparr.append([x.model.pos[0],x.model.pos[1]-10.25,x.model.pos[2],2+math.sin(now/2.0)/3.0])
+            #mapObj.clearedPoints = np.array([[-5,-10.0,-5,2+math.sin(now/2.0)/3.0],[5,-10.0,-5,2+math.sin(now/2.0)/3.0]])
+            door = self.mp.getObject("Door1")
+            if hasattr(door,"openTime"):
+                temparr.append([0,-10,0,(now-door.openTime)*70/22])
+            mapObj.clearedPoints = np.array(temparr)
         if b'm' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'm'] == 1:
             self.mp = MapLoader("maps/test2.json")
 
@@ -166,7 +173,7 @@ class Game:
         if self.player.distanceTraveled - self.player.lastWalkSound > 1.5:
             self.player.lastWalkSound = self.player.distanceTraveled
             self.audioHandler.playSound("res/audio/walksound.wav")
-        self.player.update(self.FPSCounter.deltaTime)
+        self.player.update(self.FPSCounter.deltaTime,self.inputHandler)
         if self.player.fallSound:
             self.audioHandler.playSound("res/audio/fallsound.wav")
             self.player.fallSound = False
@@ -184,11 +191,13 @@ class Game:
                 if b'e' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'e'] == 1:
                     i.isInteracting = True
                     self.inputHandler.interactingWith = i
+                    self.player.animating = 1.0
             if (isinstance(i, PuzzlePlane) or isinstance(i, SnakePlane)) and i.isInteracting:
                 popupText = i.interactText
                 if b'q' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'q'] == 1:
                     i.isInteracting = False
                     self.inputHandler.interactingWith = None
+                    self.player.animating = 1.0
             if (isinstance(i,PuzzlePlane) or isinstance(i, SnakePlane)):
                 puzzleCount += 1
                 solvedPuzzles += i.solved
@@ -202,6 +211,7 @@ class Game:
         if solvedPuzzles == puzzleCount:
             door = self.mp.getObject("Door1")
             if not door.opened and playingSound == 0:
+                door.openTime = now
                 self.audioHandler.playSound(door.sound)
                 door.open()
             

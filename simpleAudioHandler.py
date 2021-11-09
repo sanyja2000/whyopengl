@@ -1,10 +1,9 @@
-#import simpleaudio as sa
+import simpleaudio as sa
 
 class AudioHandler:
     def __init__(self):
         self.sounds_playing = {}
     def playSound(self, filename):
-        return
         wave_obj = sa.WaveObject.from_wave_file(filename)
         self.sounds_playing[filename] = wave_obj.play()
     def isStillPlaying(self, filename):

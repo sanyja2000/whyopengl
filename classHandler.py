@@ -242,11 +242,14 @@ class PuzzlePlane:
         self.holderModel.texture = Texture("res/sandstoneTexture.png")
         self.minigameModels = []
         ph = self.prefabHandler
+        walls = []
         for y in range(self.dimensions):
             yline = []
             for x in range(self.dimensions):
                 if(self.mapfile[y][x] == "#"):
-                    yline.append(PuzzleBox("wall",ph.loadFile("res/simpleBox.obj","res/boxWall.png"),self.dimensions-x,self.dimensions-y,self.boxScale,self.model,self.dimensions,self.rotationOffset))
+                    p = PuzzleBox("wall",ph.loadFile("res/simpleBox.obj","res/boxWall.png"),self.dimensions-x,self.dimensions-y,self.boxScale,self.model,self.dimensions,self.rotationOffset)
+                    yline.append(p)
+                    walls.append(p)
                 elif(self.mapfile[y][x] == "G"):
                     yline.append(PuzzleBox("G",ph.loadFile("res/simpleBox.obj","res/boxNoteG.png"),self.dimensions-x,self.dimensions-y,self.boxScale,self.model,self.dimensions,self.rotationOffset))
                 elif(self.mapfile[y][x] == "p"):
@@ -256,6 +259,7 @@ class PuzzlePlane:
                 else:
                     yline.append(None)
             self.minigameModels.append(yline)
+
     def moveWithKeys(self,inputHandler,deltaTime):
         if b'r' in inputHandler.keysDown and inputHandler.keysDown[b'r'] == 1:
             self.restart()

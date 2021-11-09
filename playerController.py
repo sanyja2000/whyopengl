@@ -1,5 +1,14 @@
 import math,pyrr, numpy as np
 
+def lerp(f, t, n):
+    return f*(1-n)+t*n
+
+def lerpVec3(f,t,n):
+    out = []
+    for x in range(3):
+        out.append(f[x]*(1-n)+t[x]*n)
+    return np.array(out)
+
 class Player:
     def __init__(self):
         self.pos = [-6.75,0,-6.75]
@@ -11,9 +20,13 @@ class Player:
         self.model = None
         self.camPosition = [0,-1,0]
         self.camRotation = [-1.57,0,0]
-        self.grounded = False
+        self.grounded = True
         self.xAng = 0
         self.yAng = 0
+
+        self.animating = 0
+        self.lastInteractedWith = None
+
         self.distanceTraveled = 0
         self.lastWalkSound = 0
         self.fallSound = False
@@ -57,11 +70,9 @@ class Player:
             self.pos[2] = cubeW
         if self.pos[2] < -1*cubeW:
             self.pos[2] = -1*cubeW
-    def update(self,deltaTime):
-        inAHole = False
-        if self.pos[0] > 5.5 and self.pos[0] < 7 and self.pos[2] > 5.5 and self.pos[2] < 7:
-            inAHole = True
-            self.grounded = False
+
+    def update(self,deltaTime,inputHandler):
+        """
         if not self.grounded:
             self.vel[1]+=-0.02*deltaTime
             if self.vel[1] > self.maxVelocity*3:
@@ -77,13 +88,46 @@ class Player:
                 self.grounded = True
             if self.pos[1] < -7:
                 self.pos = [-6.75,30,-6.75]
-            
+        """   
+
+        if self.animating>0:
+            self.animating -= deltaTime*3
+            if self.animating<0:
+                self.animating = 0
+
         if self.model != None:
             self.model.SetPosition(self.pos)
-        self.camPosition = [-self.pos[0],-self.pos[1]-1+math.sin(self.distanceTraveled*2*2)*0.02,-self.pos[2]]
-        rotz = pyrr.matrix44.create_from_z_rotation(self.yAng*math.sin(self.xAng))
-        rotx = pyrr.matrix44.create_from_x_rotation(self.yAng*math.cos(self.xAng))
-        rot = np.matmul(np.matmul(pyrr.matrix44.create_from_y_rotation(self.xAng),rotz),rotx)
+
+        
+
+        if not inputHandler.interactingWith is None:
+            self.lastInteractedWith = inputHandler.interactingWith
+            a = lerp(self.yAng,0.7853,(1-self.animating))
+            b = lerp(self.xAng%6.28,3.1415,(1-self.animating))
+            #a = 0.7853
+            #b = 3.1415
+            #self.camPosition = -1*inputHandler.interactingWith.model.pos+np.array([0,-0.35,0.3])
+            self.camPosition = lerpVec3([-self.pos[0],-self.pos[1]-1,-self.pos[2]],-1*inputHandler.interactingWith.model.pos+np.array([0,-0.35,0.3]),(1-self.animating))
+        else:
+            a = lerp(0.7853,self.yAng,(1-self.animating))
+            b = lerp(3.1415,self.xAng%6.28,(1-self.animating))
+            #a = self.yAng
+            #b = self.xAng
+        
+            if self.lastInteractedWith is not None:
+                self.camPosition = lerpVec3(-1*self.lastInteractedWith.model.pos+np.array([0,-0.35,0.3]),[-self.pos[0],-self.pos[1]-1+math.sin(self.distanceTraveled*2*2)*0.02,-self.pos[2]],(1-self.animating))
+            else:
+                self.camPosition = [-self.pos[0],-self.pos[1]-1+math.sin(self.distanceTraveled*2*2)*0.02,-self.pos[2]]
+            #
+            """
+            rotz = pyrr.matrix44.create_from_z_rotation(self.yAng*math.sin(self.xAng))
+            rotx = pyrr.matrix44.create_from_x_rotation(self.yAng*math.cos(self.xAng))
+            rot = np.matmul(np.matmul(pyrr.matrix44.create_from_y_rotation(self.xAng),rotz),rotx)
+            """
+        
+        rotz = pyrr.matrix44.create_from_z_rotation(a*math.sin(b))
+        rotx = pyrr.matrix44.create_from_x_rotation(a*math.cos(b))
+        rot = np.matmul(np.matmul(pyrr.matrix44.create_from_y_rotation(b),rotz),rotx)
         self.camModel = np.matmul(rot,np.transpose(pyrr.matrix44.create_from_translation(np.array(self.camPosition))))
         
     
