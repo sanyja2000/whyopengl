@@ -1,6 +1,7 @@
 import pyaudio, time, numpy as np
 import wave
 from threading import Thread
+from functools import partial
 import math
 
 
@@ -12,6 +13,7 @@ def sinwave(range,duration,note):
 class AudioHandler:
     def __init__(self):
         self.p = pyaudio.PyAudio()
+        """
         self.fs = 44100
         self.stream = self.p.open(format=pyaudio.paFloat32,
                         channels=1,
@@ -20,7 +22,7 @@ class AudioHandler:
                         )#,stream_callback=self.callback)
         self.notes = {}
         self.ch = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
-        self.wavefiles = []
+        
         lench = len(self.ch)
         #C1 = 65.40639132514967/2Hz
         curr = 65.40639132514967/2
@@ -29,45 +31,39 @@ class AudioHandler:
             curr = curr*2**(1/12)
         self.tempo = 0.5
         self.currentlyPlaying = None
+        """
+        self.currentlyPlaying = {}
         #self.stream.start_stream()
-    def _threadNote(self):
-        self.stream.write(self.currentlyPlaying)
-    def playFile(self, filename):
-        self.wavefiles.append(wave.open(filename, 'rb'))
-        wf = self.wavefiles[-1]
-        stream = p.open(format=self.p.get_format_from_width(wf.getsampwidth()),
+    def isStillPlaying(self,filename):
+        if filename in self.currentlyPlaying:
+            if self.currentlyPlaying[filename]:
+                return True
+        return False
+
+    def playSound(self,filename):
+        wf = wave.open(filename, 'rb')
+        stream = self.p.open(format=self.p.get_format_from_width(wf.getsampwidth()),
                         channels=wf.getnchannels(),
                         rate=wf.getframerate(),
-                        output=True,
-                        stream_callback=self.fileCallback)
-        # start the stream (4)
+                        output=True)#,stream_callback=self.fileCallback)
         stream.start_stream()
-        # wait for stream to finish (5)
-        # stop stream (6)
-        #stream.stop_stream()
-        #stream.close()
-        #wf.close()
-    def playNote(self,note, dur, volume=0.2):
-        #samples = (np.sin(2*np.pi*np.arange(self.fs*dur*self.tempo)*self.notes[note]/self.fs)).astype(np.float32)
-        samples = sinwave(1,dur,self.notes[note])
-        self.currentlyPlaying = volume*samples
-        self.music_thread = Thread(target=self._threadNote)
-        self.music_thread.start()
-    def playSamples(self, samples):
-        self.stream.write(samples)
-    def playNonBlockNote(self, note, dur, volume=0.5):
-        samples = (np.sin(2*np.pi*np.arange(self.fs*dur*self.tempo)*self.notes[note]/self.fs)).astype(np.float32)
-        self.currentlyPlaying = samples*volume
-    def destroy(self):
-        self.stream.stop_stream()
-        self.stream.close()
-        self.p.terminate()
-    def callback(self,in_data,frame_count,time_info,status):
-        data = []#self.currentlyPlaying.tobytes()
-        return (data, pyaudio.paContinue)
-    def fileCallback(in_data, frame_count, time_info, status):
-        data = wf.readframes(frame_count)
-        return (data, pyaudio.paContinue)
+        th = Thread(target=self.playBlockSound, args=(wf,stream,filename))
+        th.start()
+    
+    def playBlockSound(self,wf,stream,filename):
+        data = wf.readframes(1024)
+        self.currentlyPlaying[filename] = True
+        # play stream (3)
+        while len(data) > 0:
+            stream.write(data)
+            data = wf.readframes(1024)
+        self.currentlyPlaying[filename] = False  
+        stream.stop_stream()
+        stream.close()  
+
+
+
+        
 
 if __name__== '__main__':
     AH = AudioHandler()

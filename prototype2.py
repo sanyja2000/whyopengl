@@ -8,7 +8,7 @@ import time
 from renderer import VertexBuffer, IndexBuffer, VertexArray, VertexBufferLayout, Shader, Renderer, Texture, Camera, FPSCounter, ShaderHandler
 from inputHandler import InputHandler
 from playerController import Player
-from simpleAudioHandler import AudioHandler
+from audioHandler import AudioHandler
 from plane import *
 from objloader import processObjFile
 from objectHandler import Object3D
@@ -220,6 +220,7 @@ class Game:
         self.fontHandler.drawText(popupText,-1*len(popupText)/50,-0.6,0.05,self.renderer)
         glutSwapBuffers()
         self.inputHandler.updateKeysDown()
+        #self.audioHandler.update()
         self.FPSCounter.drawFrame(now)
 
 g = Game()
