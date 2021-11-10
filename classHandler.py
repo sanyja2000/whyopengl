@@ -103,6 +103,50 @@ class Door:
         self.rightModel.SetPosition(self.rightModel.defaultPos+np.array([-0.99*self.scale*self.openPercent,0,0]))
 
 
+class TeleportCrystal:
+    def __init__(self,ph,props):
+        self.name = props["name"]
+        self.model = ph.loadFile("res/crystal.obj","res/crystal.png")
+        self.scale = props["scale"]
+        self.model.SetScale(props["scale"])
+        self.model.SetPosition(np.array(props["pos"]))
+        self.model.SetRotation(np.array(props["rot"]))
+        self.model.defaultPosition = np.array(props["pos"])
+        self.holdermodel = ph.loadFile("res/crystal_holder.obj","res/crystal_holder_color.png")
+        self.holdermodel.SetScale(props["scale"])
+        self.holdermodel.SetPosition(np.array(props["pos"]))
+        self.holdermodel.SetRotation(np.array(props["rot"]))
+        self.holdermodel.defaultPosition = np.array(props["pos"])
+        self.sound = props["sound"]
+        self.isInteracting = False
+        self.opened = False
+        self.animationTime = 0
+        self.openPercent = 0
+
+    def draw(self,shaderhandler,renderer,viewMat):
+        self.model.DrawWithShader(shaderhandler.getShader("default"),renderer,viewMat)
+        self.holdermodel.DrawWithShader(shaderhandler.getShader("default"),renderer,viewMat)
+    def open(self):
+        if not self.opened:
+            self.opened = True
+    def update(self,deltaTime,audioHandler):
+        if self.opened and self.openPercent<1:
+            self.openPercent += 1*deltaTime
+            if self.openPercent > 1:
+                self.openPercent = 1
+        if not self.opened and self.openPercent>0:
+            self.openPercent -= 1*deltaTime
+            if self.openPercent < 0:
+                self.openPercent = 0
+        self.animationTime += deltaTime
+        self.model.SetRotation(np.array([0,self.animationTime,0]))
+        self.model.SetPosition(self.model.defaultPosition + np.array([0,math.sin(self.animationTime)*0.1,0]) +np.array([0,8*self.scale*self.openPercent,0]))
+
+
+        #self.model.SetPosition(self.model.defaultPosition+np.array([0,8*self.scale*self.openPercent,0]))
+        self.holdermodel.SetPosition(self.holdermodel.defaultPosition+np.array([0,8*self.scale*self.openPercent,0]))
+
+
 class Puzzle:
     def __init__(self,mapHandler,props):
         self.mapHandler = mapHandler
@@ -304,6 +348,7 @@ class PuzzlePlane:
                 player.moveTo(newPos[0],newPos[1])
                 self.minigameModels[self.dimensions-newPos[1]][self.dimensions-newPos[0]] = player
                 self.justMoved = True
+
 
 class SnakePlane:
     def __init__(self,ph,props):

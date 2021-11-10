@@ -45,7 +45,7 @@ class Game:
         glutInit()
         glutInitDisplayMode(GLUT_RGBA)
 
-        OPENGL_VERSION = 3
+        OPENGL_VERSION = 2
 
         if OPENGL_VERSION == 3:
             glutInitContextVersion (3, 3)
@@ -143,10 +143,7 @@ class Game:
         now = time.perf_counter()
         glutSetWindowTitle("FPS: "+str(self.FPSCounter.FPS)+" delta: "+str(self.FPSCounter.deltaTime)+" bullets: "+str(len(self.bulletModels)))
     
-        crystal = self.mp.getObject("crystal")
-        crystal.model.SetRotation(np.array([0,now*3,0]))
-        crystal.model.SetPosition(crystal.model.defaultPosition + np.array([0,math.sin(now)*0.1,0]))
-
+        
 
         mapObj = self.mp.getObject("Map1")
         if mapObj:
@@ -162,7 +159,8 @@ class Game:
         if b'm' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'm'] == 1:
             self.mp = MapLoader("maps/test2.json")
 
-        
+        if b'l' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'l'] == 1:
+            self.mp.getObject("crystal").open()
 
         self.renderer.Clear()
 
@@ -192,6 +190,8 @@ class Game:
                     i.isInteracting = True
                     self.inputHandler.interactingWith = i
                     self.player.animating = 1.0
+            if (isinstance(i, TeleportCrystal) and dist(i.model.pos,self.player.pos)<1.5 and not i.isInteracting):
+                popupText = "Press E to travel"    
             if (isinstance(i, PuzzlePlane) or isinstance(i, SnakePlane)) and i.isInteracting:
                 popupText = i.interactText
                 if b'q' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'q'] == 1:
@@ -205,6 +205,7 @@ class Game:
                     self.audioHandler.playSound(i.sound)
                     i.playedSound = True
                 playingSound += self.audioHandler.isStillPlaying(i.sound)
+            
             if hasattr(i, "update"):
                 i.update(self.FPSCounter.deltaTime,self.audioHandler)
 

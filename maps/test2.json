@@ -2,11 +2,13 @@
 {"name":"Map1","type":"mapObject","file":"res/room2.obj","texture":"res/wall_top.png","pos":[0,10,0],"rot":[0,0,0]},
 {"name":"Door1","puzzleId":"01","type":"door","pos":[6.25,0.05,6.25],"rot":[0,0,0],"scale":1.25,"sound":"res/audio/shapeofyou_full.wav"},
 {"name":"pp1","puzzleId":"01","type":"puzzlePlane","pos":[-5,0.25,-5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/testPuzzleMap.txt","sound":"res/audio/shapeofyou_1st.wav"},
-{"name":"pp2","puzzleId":"01","type":"puzzlePlane","pos":[-1,0.25,-5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/testPuzzleMap2.txt","sound":"res/audio/shapeofyou_2nd.wav"},
-{"name":"pp3","puzzleId":"01","type":"puzzlePlane","pos":[-5,0.25,-1],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/testPuzzleMap.txt","sound":"res/audio/shapeofyou_3rd.wav"},
-{"name":"pp4","puzzleId":"01","type":"puzzlePlane","pos":[-1,0.25,-1],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/testPuzzleMap2.txt","sound":"res/audio/shapeofyou_4th.wav"},
-{"name":"cyl","type":"decoration","pos":[0,1,0],"rot":[0,0,0],"scale":0.25,"file":"res/crystal_holder.obj","texture":"res/crystal_holder_color.png"},
-{"name":"crystal","type":"decoration","pos":[0,1,0],"rot":[0,0,0],"scale":0.25,"file":"res/crystal.obj","texture":"res/crystal.png"},
-        {"type":"comment", "content":{"name":"sp1","puzzleId":"01","type":"snakePlane","pos":[-5,0.25,-1],"rot":[0,-1.57,0],"scale":0.25}}
-
+{"name":"pp2","puzzleId":"01","type":"puzzlePlane","pos":[5,0.25,-5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/testPuzzleMap2.txt","sound":"res/audio/shapeofyou_2nd.wav"},
+{"name":"pp3","puzzleId":"01","type":"puzzlePlane","pos":[-5,0.25,5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/testPuzzleMap.txt","sound":"res/audio/shapeofyou_3rd.wav"},
+{"name":"pp4","puzzleId":"01","type":"puzzlePlane","pos":[5,0.25,5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/testPuzzleMap2.txt","sound":"res/audio/shapeofyou_4th.wav"},
+{"name":"crystal","type":"teleportCrystal","pos":[0,1,0],"rot":[0,0,0],"scale":0.25,"sound":"res/audio/shapeofyou_full.wav"},
+{"type":"comment", "content":[
+        {"name":"note1","type":"decoration","pos":[-3,1,-3],"rot":[0,0,0],"scale":0.25,"file":"res/notesmall.obj","texture":"res/crystal.png"},
+        {"name":"sp1","puzzleId":"01","type":"snakePlane","pos":[-5,0.25,-1],"rot":[0,-1.57,0],"scale":0.25},
+        {"name":"cyl","type":"decoration","pos":[0,1,0],"rot":[0,0,0],"scale":0.25,"file":"res/crystal_holder.obj","texture":"res/crystal_holder_color.png"},
+        {"name":"crystal","type":"decoration","pos":[0,1,0],"rot":[0,0,0],"scale":0.25,"file":"res/crystal.obj","texture":"res/crystal.png"}]}
 ]}
