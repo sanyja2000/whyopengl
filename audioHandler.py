@@ -33,6 +33,7 @@ class AudioHandler:
         self.currentlyPlaying = None
         """
         self.currentlyPlaying = {}
+        self.maxVolume = 0
         #self.stream.start_stream()
     def isStillPlaying(self,filename):
         if filename in self.currentlyPlaying:
@@ -57,6 +58,12 @@ class AudioHandler:
         while len(data) > 0:
             stream.write(data)
             data = wf.readframes(1024)
+            if len(data)>0:
+                try:
+                    vol = int(math.log(max(np.frombuffer(data, 'float32'))))/80
+                    self.maxVolume = vol/2+self.maxVolume/2
+                except:
+                    pass
         self.currentlyPlaying[filename] = False  
         stream.stop_stream()
         stream.close()  

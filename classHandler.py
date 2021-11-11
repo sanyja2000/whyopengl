@@ -122,6 +122,7 @@ class TeleportCrystal:
         self.opened = False
         self.animationTime = 0
         self.openPercent = 0
+        self.riseSpeed = 0.1
 
     def draw(self,shaderhandler,renderer,viewMat):
         self.model.DrawWithShader(shaderhandler.getShader("default"),renderer,viewMat)
@@ -131,11 +132,11 @@ class TeleportCrystal:
             self.opened = True
     def update(self,deltaTime,audioHandler):
         if self.opened and self.openPercent<1:
-            self.openPercent += 1*deltaTime
+            self.openPercent += self.riseSpeed*deltaTime
             if self.openPercent > 1:
                 self.openPercent = 1
         if not self.opened and self.openPercent>0:
-            self.openPercent -= 1*deltaTime
+            self.openPercent -= self.riseSpeed*deltaTime
             if self.openPercent < 0:
                 self.openPercent = 0
         self.animationTime += deltaTime
