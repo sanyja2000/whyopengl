@@ -106,7 +106,8 @@ class Door:
 class TeleportCrystal:
     def __init__(self,ph,props):
         self.name = props["name"]
-        self.model = ph.loadFile("res/crystal.obj","res/crystal.png")
+        #self.model = ph.loadFile("res/crystal.obj","res/crystal.png")
+        self.model = ph.loadFile("res/card.obj","res/aceOfSpades.png")
         self.scale = props["scale"]
         self.model.SetScale(props["scale"])
         self.model.SetPosition(np.array(props["pos"]))
