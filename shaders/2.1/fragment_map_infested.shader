@@ -80,13 +80,14 @@ void main(){
     for(int i=0;i<numPoints;i++){
         //vec3 clearedPoint = vec3(-5,-10.0,-5)/10.0;
         vec4 clearedPoint = clearedPoints[i]/10.0;
-        
+        /*
         float ang = atan(clearedPoint.z-v_position.z,clearedPoint.x-v_position.x)+u_Time;
 
         vec2 circlePos = vec2(cos(ang),sin(ang)*2.0)*100.0;
-
+        
         float pointR = min(0.1+pNoise(v_TexCoord*200.0+circlePos/20.0, 3),0.3)*4;
-
+        */
+        float pointR = 1.0;
         if(distance(clearedPoint.xyz,v_position)<clearedPoint.w*pointR){
             noiseVal = 1.0;
             break;
