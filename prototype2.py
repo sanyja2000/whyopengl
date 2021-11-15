@@ -45,7 +45,7 @@ class Game:
         glutInit()
         glutInitDisplayMode(GLUT_RGBA)
 
-        OPENGL_VERSION = 3
+        OPENGL_VERSION = 2
 
         if OPENGL_VERSION == 3:
             glutInitContextVersion (3, 3)
@@ -147,11 +147,6 @@ class Game:
         now = time.perf_counter()
         glutSetWindowTitle("FPS: "+str(self.FPSCounter.FPS)+" delta: "+str(self.FPSCounter.deltaTime)+" seconds: "+str(self.loopCounter))
     
-<<<<<<< HEAD
-        note = self.mp.getObject("note1")
-        note.model.SetPosition(note.model.defaultPosition+np.array([0,self.audioHandler.maxVolume,0]))
-        note.model.SetScale(2-abs(self.audioHandler.maxVolume))
-=======
         self.loopCounter += self.FPSCounter.deltaTime
         if self.loopCounter >= 17.9:
             self.loopCounter = 0
@@ -159,7 +154,6 @@ class Game:
             for x in self.audioSounds:
                 self.audioHandler.playSound(x,volumeIndex=vi)
                 vi+=1
->>>>>>> 0b26af4b7a42abea91b06266da08b527bfec9f40
 
         mapObj = self.mp.getObject("Map1")
         if mapObj:
@@ -221,25 +215,22 @@ class Game:
             if hasattr(i, "update"):
                 i.update(self.FPSCounter.deltaTime,self.audioHandler)
 
-<<<<<<< HEAD
-        if solvedPuzzles == 0:
-=======
         for x in range(solvedPuzzles):
             self.audioHandler.channelVolume[x+1] = 1
 
         if solvedPuzzles == puzzleCount:
->>>>>>> 0b26af4b7a42abea91b06266da08b527bfec9f40
             door = self.mp.getObject("crystal")
             if not door.opened and playingSound == 0:
                 door.openTime = now
                 #self.audioHandler.playSound(door.sound)
                 door.open()
             
-        #popupText = str(self.audioHandler.maxVolume)
+
         
         self.fontHandler.drawText(popupText,-1*len(popupText)/50,-0.6,0.05,self.renderer)
         glutSwapBuffers()
         self.inputHandler.updateKeysDown()
+        #self.audioHandler.update()
         self.FPSCounter.drawFrame(now)
 
 g = Game()

@@ -6,13 +6,8 @@
 {"name":"pp3","puzzleId":"01","type":"puzzlePlane","pos":[-5,0.25,5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/testPuzzleMap.txt","sound":"res/audio/shapeofyou_3rd.wav"},
 {"name":"pp4","puzzleId":"01","type":"puzzlePlane","pos":[5,0.25,5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/testPuzzleMap2.txt","sound":"res/audio/shapeofyou_4th.wav"},
 {"name":"crystal","type":"teleportCrystal","pos":[0,-1,0],"rot":[0,0,0],"scale":0.25,"sound":"res/audio/shapeofyou_full.wav"},
-<<<<<<< HEAD
-{"name":"note1","type":"decoration","pos":[-3,2,-3],"rot":[0,0,0],"scale":0.25,"file":"res/notesmall.obj","texture":"res/crystal.png"},        
-        {"type":"comment", "content":[
-=======
 {"type":"comment", "content":[
         {"name":"note1","type":"decoration","pos":[-3,1,-3],"rot":[0,0,0],"scale":0.25,"file":"res/notesmall.obj","texture":"res/crystal.png"},
->>>>>>> 0b26af4b7a42abea91b06266da08b527bfec9f40
         {"name":"sp1","puzzleId":"01","type":"snakePlane","pos":[-5,0.25,-1],"rot":[0,-1.57,0],"scale":0.25},
         {"name":"cyl","type":"decoration","pos":[0,1,0],"rot":[0,0,0],"scale":0.25,"file":"res/crystal_holder.obj","texture":"res/crystal_holder_color.png"},
         {"name":"crystal","type":"decoration","pos":[0,1,0],"rot":[0,0,0],"scale":0.25,"file":"res/crystal.obj","texture":"res/crystal.png"}]}
