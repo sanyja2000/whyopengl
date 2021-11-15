@@ -3,6 +3,7 @@ import wave
 from threading import Thread
 from functools import partial
 import math
+import struct
 
 
 def sinwave(range,duration,note):
@@ -32,6 +33,9 @@ class AudioHandler:
         self.tempo = 0.5
         self.currentlyPlaying = None
         """
+
+        self.channelVolume = [1,0,0,0,0]
+
         self.currentlyPlaying = {}
         self.maxVolume = 0
         #self.stream.start_stream()
@@ -41,33 +45,41 @@ class AudioHandler:
                 return True
         return False
 
-    def playSound(self,filename):
+    def playSound(self,filename,volumeIndex=0):
         wf = wave.open(filename, 'rb')
         stream = self.p.open(format=self.p.get_format_from_width(wf.getsampwidth()),
                         channels=wf.getnchannels(),
                         rate=wf.getframerate(),
                         output=True)#,stream_callback=self.fileCallback)
+        sformat = self.p.get_format_from_width(wf.getsampwidth())
+
         stream.start_stream()
-        th = Thread(target=self.playBlockSound, args=(wf,stream,filename))
+        th = Thread(target=self.playBlockSound, args=(wf,stream,filename,volumeIndex))
         th.start()
     
-    def playBlockSound(self,wf,stream,filename):
+    def playBlockSound(self,wf,stream,filename,volumeIndex):
+        i = 0
         data = wf.readframes(1024)
         self.currentlyPlaying[filename] = True
         # play stream (3)
         while len(data) > 0:
-            stream.write(data)
+            buf = np.frombuffer(data,dtype=np.int16)*self.channelVolume[volumeIndex]
+            outdata = buf.astype(np.int16).tostring()
+            stream.write(outdata)
             data = wf.readframes(1024)
+<<<<<<< HEAD
             if len(data)>0:
                 try:
                     vol = int(math.log(max(np.frombuffer(data, 'float32'))))/80
                     self.maxVolume = vol/2+self.maxVolume/2
                 except:
                     pass
+=======
+            #i=(i+0.01)%1
+>>>>>>> 0b26af4b7a42abea91b06266da08b527bfec9f40
         self.currentlyPlaying[filename] = False  
         stream.stop_stream()
         stream.close()  
-
 
 
         

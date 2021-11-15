@@ -128,6 +128,10 @@ class Game:
 
         self.mp = MapLoader("maps/test2.json")
 
+        self.loopCounter = 18
+        self.audioSounds = ["res/audio/lastchristmas_drum.wav","res/audio/lastchristmas_bass.wav","res/audio/lastchristmas_chords.wav","res/audio/lastchristmas_melody.wav"]
+
+
         glutMainLoop()
     def errorMsg(self, *args):
         print(args)
@@ -141,11 +145,21 @@ class Game:
         pass
     def showScreen(self):
         now = time.perf_counter()
-        glutSetWindowTitle("FPS: "+str(self.FPSCounter.FPS)+" delta: "+str(self.FPSCounter.deltaTime)+" bullets: "+str(len(self.bulletModels)))
+        glutSetWindowTitle("FPS: "+str(self.FPSCounter.FPS)+" delta: "+str(self.FPSCounter.deltaTime)+" seconds: "+str(self.loopCounter))
     
+<<<<<<< HEAD
         note = self.mp.getObject("note1")
         note.model.SetPosition(note.model.defaultPosition+np.array([0,self.audioHandler.maxVolume,0]))
         note.model.SetScale(2-abs(self.audioHandler.maxVolume))
+=======
+        self.loopCounter += self.FPSCounter.deltaTime
+        if self.loopCounter >= 17.9:
+            self.loopCounter = 0
+            vi = 1
+            for x in self.audioSounds:
+                self.audioHandler.playSound(x,volumeIndex=vi)
+                vi+=1
+>>>>>>> 0b26af4b7a42abea91b06266da08b527bfec9f40
 
         mapObj = self.mp.getObject("Map1")
         if mapObj:
@@ -154,7 +168,7 @@ class Game:
                 if isinstance(x, PuzzlePlane) and x.solved:
                     temparr.append([x.model.pos[0],x.model.pos[1]-10.25,x.model.pos[2],2+math.sin(now/2.0)/3.0])
             #mapObj.clearedPoints = np.array([[-5,-10.0,-5,2+math.sin(now/2.0)/3.0],[5,-10.0,-5,2+math.sin(now/2.0)/3.0]])
-            door = self.mp.getObject("Door1")
+            door = self.mp.getObject("crystal")
             if hasattr(door,"openTime"):
                 temparr.append([0,-10,0,(now-door.openTime)*70/22])
             mapObj.clearedPoints = np.array(temparr)
@@ -203,19 +217,22 @@ class Game:
             if (isinstance(i,PuzzlePlane) or isinstance(i, SnakePlane)):
                 puzzleCount += 1
                 solvedPuzzles += i.solved
-                if i.solved and not i.playedSound:
-                    self.audioHandler.playSound(i.sound)
-                    i.playedSound = True
-                playingSound += self.audioHandler.isStillPlaying(i.sound)
             
             if hasattr(i, "update"):
                 i.update(self.FPSCounter.deltaTime,self.audioHandler)
 
+<<<<<<< HEAD
         if solvedPuzzles == 0:
+=======
+        for x in range(solvedPuzzles):
+            self.audioHandler.channelVolume[x+1] = 1
+
+        if solvedPuzzles == puzzleCount:
+>>>>>>> 0b26af4b7a42abea91b06266da08b527bfec9f40
             door = self.mp.getObject("crystal")
             if not door.opened and playingSound == 0:
                 door.openTime = now
-                self.audioHandler.playSound(door.sound)
+                #self.audioHandler.playSound(door.sound)
                 door.open()
             
         #popupText = str(self.audioHandler.maxVolume)
