@@ -28,6 +28,7 @@ class Map:
                 points.append(self.maxPoints[x])
         parameters = {"u_Time":time.perf_counter(),"4fv,clearedPoints":np.array(points),"numPoints":len(self.clearedPoints)}
         self.model.DrawWithShader(shaderhandler.getShader("map"),renderer,viewMat,options=parameters)
+        #self.model.DrawWithShader(shaderhandler.getShader("default"),renderer,viewMat)
 
 class Noteblock13:
     def __init__(self,ph,props):
@@ -106,8 +107,10 @@ class Door:
 class TeleportCrystal:
     def __init__(self,ph,props):
         self.name = props["name"]
+        self.picture = props["picture"]
         #self.model = ph.loadFile("res/crystal.obj","res/crystal.png")
-        self.model = ph.loadFile("res/card.obj","res/cards/shapeOfYou.png")
+        self.model = ph.loadFile("res/card.obj",self.picture)
+        self.beats = props["beats"]
         self.scale = props["scale"]
         self.model.SetScale(props["scale"])
         self.model.SetPosition(np.array(props["pos"]))
@@ -118,25 +121,25 @@ class TeleportCrystal:
         self.holdermodel.SetPosition(np.array(props["pos"]))
         self.holdermodel.SetRotation(np.array(props["rot"]))
         self.holdermodel.defaultPosition = np.array(props["pos"])
-        self.sound = props["sound"]
         self.isInteracting = False
         self.opened = False
+        self.beatLength = props["beatLength"]
         self.animationTime = 0
         self.openPercent = 0
 
     def draw(self,shaderhandler,renderer,viewMat):
-        self.model.DrawWithShader(shaderhandler.getShader("default"),renderer,viewMat)
+        self.model.DrawWithShader(shaderhandler.getShader("default_transparent"),renderer,viewMat)
         self.holdermodel.DrawWithShader(shaderhandler.getShader("default"),renderer,viewMat)
     def open(self):
         if not self.opened:
             self.opened = True
     def update(self,deltaTime,audioHandler):
         if self.opened and self.openPercent<1:
-            self.openPercent += 1*deltaTime
+            self.openPercent += 0.3*deltaTime
             if self.openPercent > 1:
                 self.openPercent = 1
         if not self.opened and self.openPercent>0:
-            self.openPercent -= 1*deltaTime
+            self.openPercent -= 0.3*deltaTime
             if self.openPercent < 0:
                 self.openPercent = 0
         self.animationTime += deltaTime
@@ -148,31 +151,8 @@ class TeleportCrystal:
         self.holdermodel.SetPosition(self.holdermodel.defaultPosition+np.array([0,8*self.scale*self.openPercent,0]))
 
 
-class Puzzle:
-    def __init__(self,mapHandler,props):
-        self.mapHandler = mapHandler
-        self.solved = False
-        self.solveCheck = props["solveFunction"]
-    def trySolve(self):
-        didSolve = eval(self.solveCheck+"(self.mapHandler)")
-        if didSolve:
-            self.mapHandler.getObject("Door1").open()
-            print("puzzle solved!")
-        else:
-            self.mapHandler.getObject("Door1").close()
-            print("not solved yet")
 
-class Button:
-    def __init__(self,ph,props):
-        self.puzzleId = props["puzzleId"]
-        self.name = props["name"]
-        self.model = ph.loadFile("res/testbutton1.obj","res/uv_testbuttonfilled.png")
-        self.model.SetScale(props["scale"])
-        self.model.SetPosition(np.array(props["pos"]))
-        self.model.SetRotation(np.array(props["rot"]))
-    def draw(self,shaderhandler,renderer,viewMat):
-        self.model.DrawWithShader(shaderhandler.getShader("default"),renderer,viewMat)
-        
+
 class Decoration:
     def __init__(self,ph,props):
         self.name = props["name"]
@@ -247,7 +227,6 @@ class PuzzlePlane:
         self.holderModel.SetPosition(np.array(props["pos"]))
         self.holderModel.SetRotation(np.array(props["rot"]))
         
-        self.sound = props["sound"]
         self.solved = False
         self.playedSound = False
         self.isInteracting = False

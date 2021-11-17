@@ -1,0 +1,4 @@
+{"type":"playable","objectList":[
+    {"name":"Map1","type":"mapObject","file":"res/room2.obj","texture":"res/wall_top.png","pos":[0,10,0],"rot":[0,0,0]}
+    ]
+}    

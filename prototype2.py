@@ -45,7 +45,7 @@ class Game:
         glutInit()
         glutInitDisplayMode(GLUT_RGBA)
 
-        OPENGL_VERSION = 2
+        OPENGL_VERSION = 3
 
         if OPENGL_VERSION == 3:
             glutInitContextVersion (3, 3)
@@ -126,10 +126,12 @@ class Game:
         
         self.noteblocks = []
 
-        self.mp = MapLoader("maps/test2.json")
+        #self.mp = MapLoader("maps/test2.json")
+
+        self.mp = MapLoader("maps/menu.json")
 
         self.loopCounter = 18
-        self.audioSounds = ["res/audio/lastchristmas_drum.wav","res/audio/lastchristmas_bass.wav","res/audio/lastchristmas_chords.wav","res/audio/lastchristmas_melody.wav"]
+        #self.audioSounds = ["res/audio/lastchristmas_drum.wav","res/audio/lastchristmas_bass.wav","res/audio/lastchristmas_chords.wav","res/audio/lastchristmas_melody.wav"]
 
 
         glutMainLoop()
@@ -148,13 +150,17 @@ class Game:
         glutSetWindowTitle("FPS: "+str(self.FPSCounter.FPS)+" delta: "+str(self.FPSCounter.deltaTime)+" seconds: "+str(self.loopCounter))
     
         self.loopCounter += self.FPSCounter.deltaTime
-        if self.loopCounter >= 17.9:
+
+        card = self.mp.getObject("crystal")
+
+        if card != None and self.loopCounter >= card.beatLength:
             self.loopCounter = 0
             vi = 1
-            for x in self.audioSounds:
+            for x in card.beats:
                 self.audioHandler.playSound(x,volumeIndex=vi)
                 vi+=1
 
+        
         mapObj = self.mp.getObject("Map1")
         if mapObj:
             temparr = []
@@ -162,9 +168,8 @@ class Game:
                 if isinstance(x, PuzzlePlane) and x.solved:
                     temparr.append([x.model.pos[0],x.model.pos[1]-10.25,x.model.pos[2],2+math.sin(now/2.0)/3.0])
             #mapObj.clearedPoints = np.array([[-5,-10.0,-5,2+math.sin(now/2.0)/3.0],[5,-10.0,-5,2+math.sin(now/2.0)/3.0]])
-            door = self.mp.getObject("crystal")
-            if hasattr(door,"openTime"):
-                temparr.append([0,-10,0,(now-door.openTime)*70/22])
+            if card != None and hasattr(card,"openTime"):
+                temparr.append([0,-10,0,(now-card.openTime)*70/22])
             mapObj.clearedPoints = np.array(temparr)
         if b'm' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'm'] == 1:
             self.mp = MapLoader("maps/test2.json")
@@ -192,6 +197,12 @@ class Game:
         solvedPuzzles = 0
         playingSound = 0
         puzzleCount = 0
+
+        # Temporary fix for menu
+        if card == None:
+            puzzleCount = -1
+
+
         for i in self.mp.objects:
             i.draw(self.shaderHandler,self.renderer,viewMat)
             if (isinstance(i, PuzzlePlane) or isinstance(i, SnakePlane)) and dist(i.model.pos,self.player.pos)<1 and not i.isInteracting:
@@ -219,11 +230,10 @@ class Game:
             self.audioHandler.channelVolume[x+1] = 1
 
         if solvedPuzzles == puzzleCount:
-            door = self.mp.getObject("crystal")
-            if not door.opened and playingSound == 0:
-                door.openTime = now
-                #self.audioHandler.playSound(door.sound)
-                door.open()
+            if not card.opened and playingSound == 0:
+                card.openTime = now
+                #self.audioHandler.playSound(card.sound)
+                card.open()
             
 
         

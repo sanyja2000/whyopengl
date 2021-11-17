@@ -11,6 +11,7 @@ class MapLoader:
         self.puzzle = None
         with open(filename, "r") as f:
             self.JSONContent = json.loads("".join(f.readlines()))
+            self.type = self.JSONContent["type"]
             for obj in self.JSONContent["objectList"]:
                 if obj["type"]=="noteblock13":
                     self.objects.append(Noteblock13(self.prefabHandler,obj))
