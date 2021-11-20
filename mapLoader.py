@@ -33,6 +33,8 @@ class MapLoader:
                     self.puzzle = Puzzle(self,obj)
                 elif obj["type"]=="teleportCrystal":
                     self.objects.append(TeleportCrystal(self.prefabHandler,obj))
+                elif obj["type"]=="camera":
+                    self.objects.append(Camera(self.prefabHandler,obj))
                 elif obj["type"]=="comment":
                     pass
                 else:

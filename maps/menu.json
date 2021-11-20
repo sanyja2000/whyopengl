@@ -1,4 +1,5 @@
 {"type":"playable","objectList":[
-    {"name":"Map1","type":"mapObject","file":"res/room2.obj","texture":"res/wall_top.png","pos":[0,10,0],"rot":[0,0,0]}
+    {"name":"Map1","type":"mapObject","file":"res/room2.obj","texture":"res/wall_top.png","pos":[0,10,0],"rot":[0,0,0]},
+    {"name":"card1","type":"decoration","pos":[0,1,0],"rot":[0,0,0],"scale":0.25,"file":"res/card.obj","texture":"res/cards/shapeOfYou.png"}
     ]
 }    

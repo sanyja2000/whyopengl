@@ -5,7 +5,7 @@ from renderer import Texture
 import numpy as np
 import time
 from puzzles import *
-        
+import pyrr
 
 class Map:
     def __init__(self,ph,props):
@@ -405,4 +405,25 @@ class SnakePlane:
             self.moveDir = [0,-1]
         elif inputHandler.keysDown[b'd'] == 1:
             self.moveDir = [-1,0]
+        
+class Camera:
+    def __init__(self,ph,props):
+        #{"name":"camera1","type":"camera","movement":"fixed","pos":[0,1,0],"rot":[0,0,0]}
+        self.name = props["name"]
+        self.pos = props["pos"]
+        self.rot = props["rot"]
+        self.isActive = False
+        self.defaultPosition = np.array(props["pos"])
+        self.shaderName = "default"
+        if("transparent" in props):
+            self.shaderName = "default_transparent"
+    def draw(self):
+        pass
+    def update(self):
+        a = self.rot[1] #yMouseAngle
+        b = self.rot[0] #xMouseAngle
+        rotz = pyrr.matrix44.create_from_z_rotation(a*math.sin(b))
+        rotx = pyrr.matrix44.create_from_x_rotation(a*math.cos(b))
+        rot = np.matmul(np.matmul(pyrr.matrix44.create_from_y_rotation(b),rotz),rotx)
+        self.camModel = np.matmul(rot,np.transpose(pyrr.matrix44.create_from_translation(np.array(self.camPosition))))
         
