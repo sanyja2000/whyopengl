@@ -21,20 +21,18 @@ class MapLoader:
                     self.objects.append(Map(self.prefabHandler,obj))
                 elif obj["type"]=="door":
                     self.objects.append(Door(self.prefabHandler,obj))
-                elif obj["type"]=="button":
-                    self.objects.append(Button(self.prefabHandler,obj))
                 elif obj["type"]=="decoration":
                     self.objects.append(Decoration(self.prefabHandler,obj))
                 elif obj["type"]=="puzzlePlane":
                     self.objects.append(PuzzlePlane(self.prefabHandler,obj))
                 elif obj["type"]=="snakePlane":
                     self.objects.append(SnakePlane(self.prefabHandler,obj))
-                elif obj["type"]=="puzzle":
-                    self.puzzle = Puzzle(self,obj)
                 elif obj["type"]=="teleportCrystal":
                     self.objects.append(TeleportCrystal(self.prefabHandler,obj))
                 elif obj["type"]=="camera":
                     self.objects.append(Camera(self.prefabHandler,obj))
+                elif obj["type"]=="shaderPlane":
+                    self.objects.append(ShaderPlane(self.prefabHandler,obj))
                 elif obj["type"]=="comment":
                     pass
                 else:

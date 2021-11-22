@@ -202,4 +202,7 @@ class ShaderHandler:
             fshader = "".join(frag.readlines())
         self.shaders[name] = Shader(vshader, fshader)
     def getShader(self,name):
-        return self.shaders[name]
+        if name in self.shaders:
+            return self.shaders[name]
+        print('The shader: '+name+' is not loaded.')
+        return None

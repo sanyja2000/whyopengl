@@ -94,7 +94,7 @@ class Game:
             self.shaderHandler.loadShader("noteblock","shaders/2.1/vertex_noteblock.shader","shaders/2.1/fragment_noteblock.shader")    
             self.shaderHandler.loadShader("notepiece","shaders/2.1/vertex_notepiece.shader","shaders/2.1/fragment_notepiece.shader")    
             self.shaderHandler.loadShader("font","shaders/2.1/vertex_font.shader","shaders/2.1/fragment_font.shader")
-        
+            self.shaderHandler.loadShader("menuBg","shaders/2.1/vertex_new.shader","shaders/2.1/menuBg.shader")
         #print("Error: ")
         #print(glGetProgramInfoLog(self.shader.RendererId))
 

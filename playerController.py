@@ -125,12 +125,12 @@ class Player:
             rot = np.matmul(np.matmul(pyrr.matrix44.create_from_y_rotation(self.xAng),rotz),rotx)
             """
         
-        #rotz = pyrr.matrix44.create_from_z_rotation(a*math.sin(b))
-        #rotx = pyrr.matrix44.create_from_x_rotation(a*math.cos(b))
-        #rot = np.matmul(np.matmul(pyrr.matrix44.create_from_y_rotation(b),rotz),rotx)
         rotz = pyrr.matrix44.create_from_z_rotation(a*math.sin(b))
         rotx = pyrr.matrix44.create_from_x_rotation(a*math.cos(b))
-        rot = np.matmul(np.matmul(rotz,rotx),pyrr.matrix44.create_from_y_rotation(b))
+        rot = np.matmul(np.matmul(pyrr.matrix44.create_from_y_rotation(b),rotz),rotx)
+        #rotz = pyrr.matrix44.create_from_z_rotation(a*math.sin(b))
+        #rotx = pyrr.matrix44.create_from_x_rotation(a*math.cos(b))
+        #rot = np.matmul(np.matmul(rotz,rotx),pyrr.matrix44.create_from_y_rotation(b))
         self.camModel = np.matmul(rot,np.transpose(pyrr.matrix44.create_from_translation(np.array(self.camPosition))))
         
     

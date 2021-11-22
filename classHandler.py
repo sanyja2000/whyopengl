@@ -405,7 +405,23 @@ class SnakePlane:
             self.moveDir = [0,-1]
         elif inputHandler.keysDown[b'd'] == 1:
             self.moveDir = [-1,0]
-        
+
+class ShaderPlane:
+    def __init__(self,ph,props):
+        self.name = props["name"]
+        self.pos = props["pos"]
+        self.rot = props["rot"]
+        self.scl = props["scale"]
+        self.shaderName = props["shader"]
+        self.model = ph.loadFile("res/simplePlane.obj","res/puzzleHolderTestSuccess.png")
+        self.model.SetScale(props["scale"])
+        self.model.SetPosition(np.array(props["pos"]))
+        self.model.SetRotation(np.array(props["rot"]))
+        self.model.defaultPosition = np.array(props["pos"])
+    def draw(self,shaderhandler,renderer,viewMat):
+        self.model.DrawWithShader(shaderhandler.getShader(self.shaderName),renderer,viewMat)
+
+
 class Camera:
     def __init__(self,ph,props):
         #{"name":"camera1","type":"camera","movement":"fixed","pos":[0,1,0],"rot":[0,0,0]}
