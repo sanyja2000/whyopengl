@@ -45,7 +45,7 @@ class Game:
         glutInit()
         glutInitDisplayMode(GLUT_RGBA)
 
-        OPENGL_VERSION = 2
+        OPENGL_VERSION = 3
 
         if OPENGL_VERSION == 3:
             glutInitContextVersion (3, 3)
@@ -87,6 +87,7 @@ class Game:
             self.shaderHandler.loadShader("map","shaders/3.3/vertex_new_room.shader","shaders/3.3/fragment_map_infested.shader")
             self.shaderHandler.loadShader("noteblock","shaders/3.3/vertex_noteblock.shader","shaders/3.3/fragment_noteblock.shader")
             self.shaderHandler.loadShader("font","shaders/3.3/vertex_font.shader","shaders/3.3/fragment_font.shader")
+            self.shaderHandler.loadShader("menuBg","shaders/3.3/vertex_new.shader","shaders/3.3/menuBg.shader")
         else:
             self.shaderHandler.loadShader("default","shaders/2.1/vertex_new.shader","shaders/2.1/fragment_new.shader")
             self.shaderHandler.loadShader("default_transparent","shaders/2.1/vertex_new.shader","shaders/2.1/fragment_def_transparent.shader")
@@ -128,7 +129,7 @@ class Game:
 
         #self.mp = MapLoader("maps/test2.json")
 
-        self.mp = MapLoader("maps/menu.json")
+        self.mp = MapLoader("maps/menu.json",self.player)
 
         self.loopCounter = 18
         #self.audioSounds = ["res/audio/lastchristmas_drum.wav","res/audio/lastchristmas_bass.wav","res/audio/lastchristmas_chords.wav","res/audio/lastchristmas_melody.wav"]
@@ -144,7 +145,22 @@ class Game:
         glViewport(0,0,self.windowSize[0],self.windowSize[1])
         self.inputHandler.changeWindowSize(self.windowSize)
     def mouseClicked(self,*args):
-        pass
+        
+        if self.mp.type == "menu":
+            cards = []
+            i=2
+            c = self.mp.getObject("card1")
+            while c:
+                cards.append(c)
+                c = self.mp.getObject("card"+str(i))
+                i+=1
+            cur = self.mp.getObject("cursor")
+            if(cur.model.pos[2]<-0.6):
+                self.mp = MapLoader(cards[0].map,self.player)
+            elif(cur.model.pos[2]>0.6):
+                self.mp = MapLoader(cards[2].map,self.player)
+            else:
+                self.mp = MapLoader(cards[1].map,self.player)
     def showScreen(self):
         now = time.perf_counter()
         glutSetWindowTitle("FPS: "+str(self.FPSCounter.FPS)+" delta: "+str(self.FPSCounter.deltaTime)+" seconds: "+str(self.loopCounter))
@@ -160,7 +176,27 @@ class Game:
                 self.audioHandler.playSound(x,volumeIndex=vi)
                 vi+=1
 
-        
+
+        if self.mp.type == "menu":
+            cards = []
+            i=2
+            c = self.mp.getObject("card1")
+            while c:
+                cards.append(c)
+                c = self.mp.getObject("card"+str(i))
+                i+=1
+            cur = self.mp.getObject("cursor")
+            cur.model.SetPosition([-0.1,-self.inputHandler.mouseY/self.windowSize[1]*3,self.inputHandler.mouseX/self.windowSize[0]*3])
+            #print(self.inputHandler.mouseX,self.inputHandler.mouseY)
+            for x in cards:
+                x.isActive = False
+            if(cur.model.pos[2]<-0.6):
+                cards[0].isActive = True
+            elif(cur.model.pos[2]>0.6):
+                cards[2].isActive = True
+            else:
+                cards[1].isActive = True
+            
         mapObj = self.mp.getObject("Map1")
         if mapObj:
             temparr = []
@@ -172,7 +208,7 @@ class Game:
                 temparr.append([0,-10,0,(now-card.openTime)*70/22])
             mapObj.clearedPoints = np.array(temparr)
         if b'm' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'm'] == 1:
-            self.mp = MapLoader("maps/test2.json")
+            self.mp = MapLoader("maps/menu.json",self.player)
 
         if b'l' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'l'] == 1:
             self.mp.getObject("crystal").open()

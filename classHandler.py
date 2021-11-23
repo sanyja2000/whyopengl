@@ -7,6 +7,16 @@ import time
 from puzzles import *
 import pyrr
 
+def lerp(f, t, n):
+    return f*(1-n)+t*n
+
+def lerpVec3(f,t,n):
+    out = []
+    for x in range(3):
+        out.append(f[x]*(1-n)+t[x]*n)
+    return np.array(out)
+
+
 class Map:
     def __init__(self,ph,props):
         self.objFile = props["file"]
@@ -419,27 +429,59 @@ class ShaderPlane:
         self.model.SetRotation(np.array(props["rot"]))
         self.model.defaultPosition = np.array(props["pos"])
     def draw(self,shaderhandler,renderer,viewMat):
-        self.model.DrawWithShader(shaderhandler.getShader(self.shaderName),renderer,viewMat)
+        self.model.DrawWithShader(shaderhandler.getShader(self.shaderName),renderer,viewMat,options={"u_Time":time.perf_counter()})
 
 
 class Camera:
-    def __init__(self,ph,props):
+    def __init__(self,props):
         #{"name":"camera1","type":"camera","movement":"fixed","pos":[0,1,0],"rot":[0,0,0]}
         self.name = props["name"]
         self.pos = props["pos"]
         self.rot = props["rot"]
         self.isActive = False
+        self.movement = props["movement"]
         self.defaultPosition = np.array(props["pos"])
         self.shaderName = "default"
         if("transparent" in props):
             self.shaderName = "default_transparent"
-    def draw(self):
+    def draw(self,shaderhandler,renderer,viewMat):
         pass
-    def update(self):
+    def update(self,deltaTime,audioHandler):
+        """
         a = self.rot[1] #yMouseAngle
         b = self.rot[0] #xMouseAngle
         rotz = pyrr.matrix44.create_from_z_rotation(a*math.sin(b))
         rotx = pyrr.matrix44.create_from_x_rotation(a*math.cos(b))
         rot = np.matmul(np.matmul(pyrr.matrix44.create_from_y_rotation(b),rotz),rotx)
         self.camModel = np.matmul(rot,np.transpose(pyrr.matrix44.create_from_translation(np.array(self.camPosition))))
+        """
+        pass
         
+class MenuCard:
+    def __init__(self,ph,props):
+        self.name = props["name"]
+        self.model = ph.loadFile("res/card.obj",props["picture"])
+        self.model.SetScale(props["scale"])
+        self.model.SetPosition(np.array(props["pos"]))
+        self.model.SetRotation(np.array(props["rot"]))
+        self.model.defaultPosition = np.array(props["pos"])
+        self.model.defaultRotation = np.array(props["rot"])
+        self.model.defaultScale = props["scale"]
+        self.map = props["map"]
+        self.animationTime = 0
+        self.isActive = False
+    def draw(self,shaderhandler,renderer,viewMat):
+        self.model.DrawWithShader(shaderhandler.getShader("default_transparent"),renderer,viewMat)
+    def update(self,deltaTime,audioHandler):
+        if self.isActive and self.animationTime<1:
+            self.animationTime+=deltaTime*5
+            if self.animationTime>1:
+                self.animationTime = 1
+        if not self.isActive and self.animationTime > 0:
+            self.animationTime-=deltaTime*2
+            if self.animationTime<0:
+                self.animationTime = 0
+        s = lerp(self.model.defaultScale,self.model.defaultScale+0.25,self.animationTime)
+        
+
+        self.model.SetScale(s)

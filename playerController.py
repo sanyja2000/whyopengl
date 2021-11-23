@@ -23,6 +23,7 @@ class Player:
         self.grounded = True
         self.xAng = 0
         self.yAng = 0
+        self.camera = None
 
         self.animating = 0
         self.lastInteractedWith = None
@@ -31,6 +32,8 @@ class Player:
         self.lastWalkSound = 0
         self.fallSound = False
     def moveWithKeys(self,inputHandler,deltaTime):
+        if self.camera.movement == "fixed":
+            return
         keysDown = inputHandler.keysDown
         if not inputHandler.interactingWith is None:
             inputHandler.interactingWith.moveWithKeys(inputHandler,deltaTime)
@@ -124,10 +127,14 @@ class Player:
             rotx = pyrr.matrix44.create_from_x_rotation(self.yAng*math.cos(self.xAng))
             rot = np.matmul(np.matmul(pyrr.matrix44.create_from_y_rotation(self.xAng),rotz),rotx)
             """
-        
-        rotz = pyrr.matrix44.create_from_z_rotation(a*math.sin(b))
-        rotx = pyrr.matrix44.create_from_x_rotation(a*math.cos(b))
-        rot = np.matmul(np.matmul(pyrr.matrix44.create_from_y_rotation(b),rotz),rotx)
+        if self.camera.movement == "free":
+            rotz = pyrr.matrix44.create_from_z_rotation(a*math.sin(b))
+            rotx = pyrr.matrix44.create_from_x_rotation(a*math.cos(b))
+            rot = np.matmul(np.matmul(pyrr.matrix44.create_from_y_rotation(b),rotz),rotx)
+        else:
+            rotz = pyrr.matrix44.create_from_z_rotation(self.camera.rot[2])
+            rotx = pyrr.matrix44.create_from_x_rotation(self.camera.rot[0])
+            rot = np.matmul(np.matmul(pyrr.matrix44.create_from_y_rotation(self.camera.rot[1]),rotz),rotx)
         #rotz = pyrr.matrix44.create_from_z_rotation(a*math.sin(b))
         #rotx = pyrr.matrix44.create_from_x_rotation(a*math.cos(b))
         #rot = np.matmul(np.matmul(rotz,rotx),pyrr.matrix44.create_from_y_rotation(b))
