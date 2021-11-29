@@ -1,0 +1,9 @@
+{"type":"playable","objectList":[
+    {"name":"Map1","type":"mapObject","file":"res/roomtest.obj","texture":"res/wall_top.png","pos":[0,10,0],"rot":[0,0,0]},
+    {"name":"camf","type":"camera","pos":[0,0,-5],"rot":[0,0,0],"movement":"free"},
+    {"name":"pp1","puzzleId":"01","type":"puzzlePlane","pos":[-5,0.25,-5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/testPuzzleMap.txt"},
+    {"name":"pp2","puzzleId":"01","type":"puzzlePlane","pos":[5,0.25,-5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/testPuzzleMap2.txt"},
+    {"name":"pp3","puzzleId":"01","type":"puzzlePlane","pos":[-5,0.25,5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/testPuzzleMap.txt"},
+    {"name":"pp4","puzzleId":"01","type":"puzzlePlane","pos":[5,0.25,5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/testPuzzleMap2.txt"},
+    {"name":"crystal","type":"teleportCrystal","picture":"res/cards/shapeOfYou.png","pos":[0,-1,0],"rot":[0,0,0],"scale":0.25,"beatLength":11.22,"beats":["res/audio/blindinglights_drum.wav","res/audio/blindinglights_bass.wav","res/audio/blindinglights_chords.wav","res/audio/blindinglights_melody.wav"]}
+    ]}
