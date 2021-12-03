@@ -44,19 +44,19 @@ class Player:
         self.vel[2] = self.maxVelocity*math.sin(-self.xAng)*deltaTime
         cubeW = 9.5
         moved = False
-        if keysDown[b'd']:
+        if inputHandler.isKeyHeldDown(b'd'):
             self.pos[0] += self.vel[0]
             self.pos[2] -= self.vel[2]
             moved = True
-        if keysDown[b'a']:
+        if inputHandler.isKeyHeldDown(b'a'):
             self.pos[0] -= self.vel[0]
             self.pos[2] += self.vel[2]
             moved = True
-        if keysDown[b's']:
+        if inputHandler.isKeyHeldDown(b's'):
             self.pos[2] += self.vel[0]
             self.pos[0] += self.vel[2]
             moved = True
-        if keysDown[b'w']:
+        if inputHandler.isKeyHeldDown(b'w'):
             self.pos[2] -= self.vel[0]
             self.pos[0] -= self.vel[2]
             moved = True
@@ -75,24 +75,6 @@ class Player:
             self.pos[2] = -1*cubeW
 
     def update(self,deltaTime,inputHandler):
-        """
-        if not self.grounded:
-            self.vel[1]+=-0.02*deltaTime
-            if self.vel[1] > self.maxVelocity*3:
-                self.vel[1] = self.maxVelocity*3
-            if self.vel[1] < -1*self.maxVelocity*3:
-                self.vel[1] = -1*self.maxVelocity*3
-            self.pos[1]+=self.vel[1]
-            if self.pos[1] < 0 and not inAHole:
-                print("grounded")
-                self.fallSound = True
-                self.vel[1] = 0
-                self.pos[1] = 0
-                self.grounded = True
-            if self.pos[1] < -7:
-                self.pos = [-6.75,30,-6.75]
-        """   
-
         if self.animating>0:
             self.animating -= deltaTime*3
             if self.animating<0:

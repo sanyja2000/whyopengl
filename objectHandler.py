@@ -67,8 +67,8 @@ class prefabHandler:
         self.loadedFiles = []
         self.loadedObjects = []
         self.emptyObj = Object3D(None,texture="res/1px.png")
-    def loadFile(self,_filename,_texture,textureRepeat=False):
-        if _filename in self.loadedFiles:
+    def loadFile(self,_filename,_texture,textureRepeat=False,unique=False):
+        if _filename in self.loadedFiles and not unique:
             index = self.loadedFiles.index(_filename)
             o = self.loadedObjects[index].Clone()
             if(hasattr(self.loadedObjects[index],"texture") and _texture != self.loadedObjects[index].texture.FilePath):

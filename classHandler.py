@@ -1,11 +1,14 @@
 import math
+from numpy.lib.arraysetops import unique
 from numpy.lib.function_base import delete
 from objectHandler import Object3D
 from renderer import Texture
 import numpy as np
 import time
 from puzzles import *
+from PIL import Image
 import pyrr
+import random
 
 def lerp(f, t, n):
     return f*(1-n)+t*n
@@ -226,7 +229,7 @@ class PuzzlePlane:
         self.interactText = "Press Q to leave - Press R to restart puzzle"
         self.puzzleId = props["puzzleId"]
         self.name = props["name"]
-        self.model = ph.loadFile("res/squarePlane.obj","res/puzzleHolderTestSuccess.png")
+        self.model = ph.loadFile("res/squarePlane.obj","res/sandstoneTextureLight.png")
         self.model.SetScale(props["scale"]*1.25)
         self.model.SetPosition(np.array(props["pos"])+np.array([0,2.01,0])*props["scale"])
         self.model.SetRotation(np.array(props["rot"])+np.array([-0.785,-1.57,0]))
@@ -242,7 +245,6 @@ class PuzzlePlane:
         self.isInteracting = False
         with open(props["mapfile"],"r") as f:
             self.mapfile = f.read().split("\n")
-        #self.mapfile = ["####...#","##.....#","#...G...","#.......","#.......","#.......","#...g...","#......."]
         self.dimensions = len(self.mapfile)
         self.minigameModels = []
 
@@ -263,12 +265,19 @@ class PuzzlePlane:
                     mod.draw(shaderhandler,renderer,viewMat)
     def update(self,deltaTime,audioHandler):
         if self.justMoved:
-            audioHandler.playSound("res/audio/puzzle_move.wav")
+            audioHandler.playSound("res/audio/puzzlemove.wav")
             self.justMoved = False
-        if self.solved and self.holderModel.textureFile == "res/puzzleHolderTestFail.png":
-            self.holderModel.textureFile = "res/puzzleHolderTestSuccess.png"
-            self.holderModel.texture = Texture("res/puzzleHolderTestSuccess.png")
-            
+    
+    def checkSolved(self):
+        solvedCount = 0
+        for y in range(self.dimensions):
+            for x in range(self.dimensions):
+                if not self.minigameModels[y][x] is None:
+                    if self.minigameModels[y][x].name == "G":
+                        if [x,y] in self.solvedPositions:
+                            solvedCount += 1
+        if solvedCount == len(self.solvedPositions):
+            self.solved = True
     def restart(self):
         self.solved = False
         self.playedSound = False
@@ -277,6 +286,7 @@ class PuzzlePlane:
         self.minigameModels = []
         ph = self.prefabHandler
         walls = []
+        self.solvedPositions = []
         for y in range(self.dimensions):
             yline = []
             for x in range(self.dimensions):
@@ -290,13 +300,19 @@ class PuzzlePlane:
                     yline.append(PuzzleBox("p",ph.loadFile("res/simpleBox.obj","res/boxPlayer.png"),self.dimensions-x,self.dimensions-y,self.boxScale,self.model,self.dimensions,self.rotationOffset))
                 elif(self.mapfile[y][x] == "g"):
                     yline.append(PuzzleBox("g",ph.loadFile("res/simpleBox.obj","res/boxNoteGFinish.png"),self.dimensions-x,self.dimensions-y,self.boxScale,self.model,self.dimensions,self.rotationOffset))
+                    self.solvedPositions.append([x,y])
+                elif(self.mapfile[y][x] == "s"):
+                    yline.append(PuzzleBox("G",ph.loadFile("res/simpleBox.obj","res/boxNoteG.png"),self.dimensions-x,self.dimensions-y,self.boxScale,self.model,self.dimensions,self.rotationOffset))
+                    self.solvedPositions.append([x,y])
                 else:
                     yline.append(None)
             self.minigameModels.append(yline)
 
     def moveWithKeys(self,inputHandler,deltaTime):
-        if b'r' in inputHandler.keysDown and inputHandler.keysDown[b'r'] == 1:
+        if inputHandler.isKeyDown(b'r'):
             self.restart()
+        if self.solved:
+            return
         player = self.minigameModels[0]
         for yline in self.minigameModels:
             for mod in yline:
@@ -306,16 +322,17 @@ class PuzzlePlane:
                         break
         
         dir = [0,0]
-        if inputHandler.keysDown[b'w'] == 1:
+        if inputHandler.isKeyDown(b'w'):
             dir = [0,1]
-        elif inputHandler.keysDown[b'a'] == 1:
+        elif inputHandler.isKeyDown(b'a'):
             dir = [1,0]
-        elif inputHandler.keysDown[b's'] == 1:
+        elif inputHandler.isKeyDown(b's'):
             dir = [0,-1]
-        elif inputHandler.keysDown[b'd'] == 1:
+        elif inputHandler.isKeyDown(b'd'):
             dir = [-1,0]
         newPos = [player.x+dir[0],player.y+dir[1]]
         canMove = True
+        ph = self.prefabHandler
         if -1<newPos[0]<self.dimensions and -1<newPos[1]<self.dimensions:
             nextPlace = self.minigameModels[self.dimensions-newPos[1]][self.dimensions-newPos[0]]
             if not nextPlace is None:
@@ -324,62 +341,173 @@ class PuzzlePlane:
                         self.minigameModels[self.dimensions-newPos[1]][self.dimensions-newPos[0]] = None
                         nextPlace.moveTo(newPos[0]+dir[0],newPos[1]+dir[1])
                         self.minigameModels[self.dimensions-newPos[1]-dir[1]][self.dimensions-newPos[0]-dir[0]] = nextPlace
+                        
                     elif self.minigameModels[self.dimensions-newPos[1]-dir[1]][self.dimensions-newPos[0]-dir[0]].name == "g":
                         self.minigameModels[self.dimensions-newPos[1]][self.dimensions-newPos[0]] = None
                         nextPlace.moveTo(newPos[0]+dir[0],newPos[1]+dir[1])
                         self.minigameModels[self.dimensions-newPos[1]-dir[1]][self.dimensions-newPos[0]-dir[0]] = nextPlace
-                        self.solved = True
+                        #self.solved = True
                     else:
                         canMove = False
+                elif nextPlace.name == "g":
+                    pass
                 else:
                     canMove = False
             if canMove:
                 self.minigameModels[self.dimensions-player.y][self.dimensions-player.x] = None
+                if [self.dimensions-player.x,self.dimensions-player.y] in self.solvedPositions:
+                    self.minigameModels[self.dimensions-player.y][self.dimensions-player.x] = PuzzleBox("g",ph.loadFile("res/simpleBox.obj","res/boxNoteGFinish.png"),player.x,player.y,self.boxScale,self.model,self.dimensions,self.rotationOffset)
                 player.moveTo(newPos[0],newPos[1])
                 self.minigameModels[self.dimensions-newPos[1]][self.dimensions-newPos[0]] = player
                 self.justMoved = True
+        self.checkSolved()
 
 
-class SnakePlane:
+class SlidePiece:
+    def __init__(self,name,model,x,y,scale,parentModel,dimensions,rotationOffset):
+        """
+        name->not unique identifier
+        model->3d model from prefabhandler
+        x,y -> position in the NxN grid in minigame
+        scale -> scale to fit in the NxN grid
+        parentModel -> model of parent plane, to match rotation, position
+        dimensions -> NxN dimension of uniform grid
+        rotationOffset -> offset to match parent rotation
+        """
+        self.name = name
+        self.x = x
+        self.y = y
+        self.model = model
+        self.sqrttwo = 1.4142135
+        self.rotationOffset = rotationOffset
+        self.dimensions = dimensions
+        self.scl = parentModel.scale*scale
+        self.parentModel = parentModel
+        x = self.rotationOffset[0]*self.x*self.scl*2+self.rotationOffset[2]*self.y*self.scl*self.sqrttwo
+        z = self.rotationOffset[0]*self.y*self.scl*self.sqrttwo+self.rotationOffset[2]*self.x*self.scl*2
+        self.offset = np.array([x,self.y*self.scl*self.sqrttwo,z])
+        x = self.rotationOffset[0]*(-1*self.dimensions/2-0.5)*self.scl*2+self.rotationOffset[2]*(-1*self.dimensions/2)*self.scl*self.sqrttwo
+        z = self.rotationOffset[0]*(-1*self.dimensions/2)*self.scl*self.sqrttwo+self.rotationOffset[2]*(-1*self.dimensions/2-0.5)*self.scl*2
+        self.mapOffset = np.array([x,-0.5*self.parentModel.scale,z])
+        
+        self.model.SetPosition(parentModel.pos+self.offset+self.mapOffset)
+        self.model.SetRotation(parentModel.rot)
+        self.model.SetScale(parentModel.scale*scale)
+    def moveTo(self,x,y):
+        self.x = x
+        self.y = y
+        x = self.rotationOffset[0]*self.x*self.scl*2+self.rotationOffset[2]*self.y*self.scl*self.sqrttwo
+        z = self.rotationOffset[0]*self.y*self.scl*self.sqrttwo+self.rotationOffset[2]*self.x*self.scl*2
+        self.offset = np.array([x,self.y*self.scl*self.sqrttwo,z])
+        self.model.SetPosition(self.parentModel.pos+self.offset+self.mapOffset)
+    def draw(self,shaderhandler,renderer,viewMat):
+        self.model.DrawWithShader(shaderhandler.getShader("default"),renderer,viewMat)
+
+class SlidePlane:
     def __init__(self,ph,props):
-        self.prefabHandler = ph
-        self.interactText = "Press Q to leave - Press R to restart puzzle"
-        self.puzzleId = props["puzzleId"]
         self.name = props["name"]
-        self.model = ph.loadFile("res/squarePlane.obj","res/puzzleHolderTestSuccess.png")
+        self.pos = props["pos"]
+        self.rot = props["rot"]
+        self.scl = props["scale"]
+        self.interactText = "Press Q to leave - Press R to restart puzzle"
+        self.prefabHandler = ph
+        self.model = ph.loadFile("res/squarePlane.obj","res/sandstoneTextureLight.png")
         self.model.SetScale(props["scale"]*1.25)
         self.model.SetPosition(np.array(props["pos"])+np.array([0,2.01,0])*props["scale"])
         self.model.SetRotation(np.array(props["rot"])+np.array([-0.785,-1.57,0]))
         
-        
-        self.holderModel = ph.loadFile("res/puzzleHolder.obj","res/puzzleHolderTestFail.png")
-        self.holderModel.textureFile = "res/puzzleHolderTestFail.png"
+        self.holderModel = ph.loadFile("res/puzzleHolder.obj","res/sandstoneTexture.png")
+        self.holderModel.textureFile = "res/sandstoneTexture.png"
         self.holderModel.SetScale(props["scale"])
         self.holderModel.SetPosition(np.array(props["pos"]))
         self.holderModel.SetRotation(np.array(props["rot"]))
-        
-        self.moveDir = [0,-1]
-        self.lastMove = 0
-        self.solved = False
-        self.isInteracting = False
 
-        self.snakeBits = []
-        self.dimensions = 8
-        self.minigameModels = [[None for i in range(self.dimensions)] for i in range(self.dimensions)]
-
-        self.sqrttwo = 1.4142135
-        self.boxScale = 1/self.dimensions*0.9
         self.rotationOffset = [math.cos(self.model.rot[1]+3.14),1,math.sin(self.model.rot[1]+3.14)]
 
-        for x in range(self.dimensions):
-            for y in range(self.dimensions):
-                if x==0 or y==0 or x==7 or y == 7:
-                    self.minigameModels[y][x] = PuzzleBox("wall",ph.loadFile("res/simpleBox.obj","res/boxWall.png"),self.dimensions-x,self.dimensions-y,self.boxScale,self.model,self.dimensions,self.rotationOffset)
-                if x==3 and y == 2:
-                    self.minigameModels[y][x] = PuzzleBox("p",ph.loadFile("res/simpleBox.obj","res/boxPlayer.png"),self.dimensions-x,self.dimensions-y,self.boxScale,self.model,self.dimensions,self.rotationOffset)
-                if x==5 and y == 6:
-                    self.minigameModels[y][x] = PuzzleBox("G",ph.loadFile("res/simpleBox.obj","res/boxNoteG.png"),self.dimensions-x,self.dimensions-y,self.boxScale,self.model,self.dimensions,self.rotationOffset)
-        
+        self.solved = False
+        self.isInteracting = False
+        self.justMoved = False
+
+        self.size = [4,3]
+        self.boxScale = 1/self.size[0]*0.9
+        self.image = props["picture"]
+
+        self.restart()
+        self.shuffle()
+    def shuffle(self):
+        self.solved = False
+        for i in range(30):
+            direction = [0,0]
+            move = random.randint(0,3)
+            if move == 0:
+                direction[1] = -1
+            if move == 1:
+                direction[0] = -1
+            if move == 2:
+                direction[1] = 1
+            if move == 3:
+                direction[0] = 1
+            moved = False
+            for y in range(self.size[1]):
+                for x in range(self.size[0]):
+                    if self.minigameModels[y][x] == None:
+                        if abs(direction[0])>0 and 0<=x+direction[0]<self.size[0]:
+                            self.minigameModels[y][x] = self.minigameModels[y][x+direction[0]]
+                            self.minigameModels[y][x].moveTo(self.size[0]-x,self.size[1]-y)
+                            self.minigameModels[y][x+direction[0]] = None
+                            moved = True
+                            break
+                        elif abs(direction[1])>0 and 0<=y+direction[1]<self.size[1]:
+                            self.minigameModels[y][x] = self.minigameModels[y+direction[1]][x]
+                            self.minigameModels[y][x].moveTo(self.size[0]-x,self.size[1]-y)
+                            self.minigameModels[y+direction[1]][x] = None
+                            moved = True
+                            break
+                if moved:
+                    break
+            
+    def checkSolved(self):
+        self.solved = False
+        for y in range(self.size[1]):
+            for x in range(self.size[0]):
+                if not self.minigameModels[y][x] is None:
+                    if str(x)+","+str(y) != self.minigameModels[y][x].name:
+                        return
+        self.solved = True
+    def moveWithKeys(self,inputHandler,deltaTime):
+        if inputHandler.isKeyDown(b'r'):
+            self.restart()
+        if self.solved:
+            return
+        direction = [0,0]
+        if inputHandler.isKeyDown(b's'):
+            direction[1] = -1
+        if inputHandler.isKeyDown(b'd'):
+            direction[0] = -1
+        if inputHandler.isKeyDown(b'w'):
+            direction[1] = 1
+        if inputHandler.isKeyDown(b'a'):
+            direction[0] = 1
+        moved = False
+        for y in range(self.size[1]):
+            for x in range(self.size[0]):
+                if self.minigameModels[y][x] == None:
+                    if abs(direction[0])>0 and 0<=x+direction[0]<self.size[0]:
+                        self.minigameModels[y][x] = self.minigameModels[y][x+direction[0]]
+                        self.minigameModels[y][x].moveTo(self.size[0]-x,self.size[1]-y)
+                        self.minigameModels[y][x+direction[0]] = None
+                        moved = True
+                        break
+                    elif abs(direction[1])>0 and 0<=y+direction[1]<self.size[1]:
+                        self.minigameModels[y][x] = self.minigameModels[y+direction[1]][x]
+                        self.minigameModels[y][x].moveTo(self.size[0]-x,self.size[1]-y)
+                        self.minigameModels[y+direction[1]][x] = None
+                        moved = True
+                        break
+            if moved:
+                self.justMoved = True
+                break
+        self.checkSolved()
         
     def draw(self,shaderhandler,renderer,viewMat):
         self.model.DrawWithShader(shaderhandler.getShader("default"),renderer,viewMat)
@@ -389,32 +517,35 @@ class SnakePlane:
                 if not mod is None:
                     mod.draw(shaderhandler,renderer,viewMat)
     def update(self,deltaTime,audioHandler):
-        if self.isInteracting:
-            now = time.perf_counter()
-            if now-self.lastMove>0.5:
-                self.lastMove = now
-                player = self.minigameModels[0]
-                for yline in self.minigameModels:
-                    for mod in yline:
-                        if not mod is None:
-                            if mod.name == "p":
-                                player = mod
-                                break
-                if self.minigameModels[self.dimensions-player.y-self.moveDir[1]][self.dimensions-player.x-self.moveDir[0]] is None:
-                    #print(self.minigameModels[self.dimensions-player.y+self.moveDir[1]][self.dimensions-player.x+self.moveDir[0]])
-                    player.moveTo(player.x+self.moveDir[0],player.y+self.moveDir[1])
-                    self.minigameModels[self.dimensions-player.y+self.moveDir[1]][self.dimensions-player.x+self.moveDir[0]] = player
-                    self.minigameModels[self.dimensions-player.y][self.dimensions-player.x] = None
+        if self.justMoved:
+            audioHandler.playSound("res/audio/puzzlemove.wav")
+            self.justMoved = False
+    def restart(self):
+        # cut the image into 3x2 pieces
+        im = Image.open(self.image)
+        width, height = im.size
+        
+        ph = self.prefabHandler
+        self.minigameModels = []
+        for y in range(self.size[1]):
+            yline = []
+            top = (y)*height/self.size[1]
+            bottom = (y+1)*height/self.size[1]
+            for x in range(self.size[0]):
+                if(x+y==self.size[0]+self.size[1]-2):
+                    yline.append(None)
+                    continue
+                left = (x)*width/self.size[0]
+                right = (x+1)*width/self.size[0]
+                yline.append(SlidePiece(str(x)+","+str(y),ph.loadFile("res/slidebox.obj","res/puzzles/photo1.png",unique=True),self.size[0]-x,self.size[1]-y,self.boxScale,self.model,3,self.rotationOffset))
+                yline[-1].model.texture.OverrideTexture(im.crop((left, top, right, bottom)),repeat=True)
 
-    def moveWithKeys(self,inputHandler,deltaTime):
-        if inputHandler.keysDown[b'w'] == 1:
-            self.moveDir = [0,1]
-        elif inputHandler.keysDown[b'a'] == 1:
-            self.moveDir = [1,0]
-        elif inputHandler.keysDown[b's'] == 1:
-            self.moveDir = [0,-1]
-        elif inputHandler.keysDown[b'd'] == 1:
-            self.moveDir = [-1,0]
+            self.minigameModels.append(yline)
+        self.shuffle()
+
+
+        
+
 
 class ShaderPlane:
     def __init__(self,ph,props):

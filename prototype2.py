@@ -45,7 +45,7 @@ class Game:
         glutInit()
         glutInitDisplayMode(GLUT_RGBA)
 
-        OPENGL_VERSION = 2
+        OPENGL_VERSION = 3
 
         if OPENGL_VERSION == 3:
             glutInitContextVersion (3, 3)
@@ -241,21 +241,21 @@ class Game:
 
         for i in self.mp.objects:
             i.draw(self.shaderHandler,self.renderer,viewMat)
-            if (isinstance(i, PuzzlePlane) or isinstance(i, SnakePlane)) and dist(i.model.pos,self.player.pos)<1 and not i.isInteracting:
+            if (isinstance(i, PuzzlePlane) or isinstance(i, SlidePlane)) and dist(i.model.pos,self.player.pos)<1 and not i.isInteracting:
                 popupText = "Press E to interact"
-                if b'e' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'e'] == 1:
+                if self.inputHandler.isKeyDown(b'e'):
                     i.isInteracting = True
                     self.inputHandler.interactingWith = i
                     self.player.animating = 1.0
             if (isinstance(i, TeleportCrystal) and dist(i.model.pos,self.player.pos)<1.5 and not i.isInteracting):
                 popupText = "Press E to travel"    
-            if (isinstance(i, PuzzlePlane) or isinstance(i, SnakePlane)) and i.isInteracting:
+            if (isinstance(i, PuzzlePlane) or isinstance(i, SlidePlane)) and i.isInteracting:
                 popupText = i.interactText
-                if b'q' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'q'] == 1:
+                if self.inputHandler.isKeyDown(b'q'):
                     i.isInteracting = False
                     self.inputHandler.interactingWith = None
                     self.player.animating = 1.0
-            if (isinstance(i,PuzzlePlane) or isinstance(i, SnakePlane)):
+            if (isinstance(i,PuzzlePlane) or isinstance(i, SlidePlane)):
                 puzzleCount += 1
                 solvedPuzzles += i.solved
             

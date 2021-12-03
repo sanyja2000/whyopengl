@@ -150,6 +150,28 @@ class Texture:
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, self.Width, self.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, self.LocalBuffer)
         glBindTexture(GL_TEXTURE_2D, 0)
+    def OverrideTexture(self,image,repeat=False):
+        self.im = image
+        
+        self.Width, self.Height = self.im.size
+
+        #out = im.transpose(Image.FLIP_TOP_BOTTOM)
+        
+        self.RendererId = glGenTextures(1)
+        glBindTexture(GL_TEXTURE_2D,self.RendererId)
+        self.LocalBuffer = self.im.tobytes("raw", "RGBA", 0, -1)
+        
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR)
+        if repeat:
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+        else:
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE)
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, self.Width, self.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, self.LocalBuffer)
+        glBindTexture(GL_TEXTURE_2D, 0)
     def Bind(self,slot=0):
         glActiveTexture(GL_TEXTURE0+slot)
         glBindTexture(GL_TEXTURE_2D, self.RendererId)

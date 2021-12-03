@@ -40,6 +40,14 @@ class InputHandler:
         self.keysDown[args[0]] = 1
     def keyUpHandler(self, *args):
         self.keysDown[args[0]] = 0
+    def isKeyDown(self,key):
+        if key in self.keysDown and self.keysDown[key] == 1:
+            return True
+        return False
+    def isKeyHeldDown(self,key):
+        if key in self.keysDown and self.keysDown[key] == 2:
+            return True
+        return False
     def updateKeysDown(self):
         for key in self.keysDown:
             if self.keysDown[key] == 1:

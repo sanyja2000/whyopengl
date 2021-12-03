@@ -22,8 +22,8 @@ class MapLoader:
                     self.objects.append(Decoration(self.prefabHandler,obj))
                 elif obj["type"]=="puzzlePlane":
                     self.objects.append(PuzzlePlane(self.prefabHandler,obj))
-                elif obj["type"]=="snakePlane":
-                    self.objects.append(SnakePlane(self.prefabHandler,obj))
+                elif obj["type"]=="slidePlane":
+                    self.objects.append(SlidePlane(self.prefabHandler,obj))
                 elif obj["type"]=="teleportCrystal":
                     self.objects.append(TeleportCrystal(self.prefabHandler,obj))
                 elif obj["type"]=="menuCard":
