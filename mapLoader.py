@@ -44,3 +44,16 @@ class MapLoader:
             if o.name == objName:
                 return o
         return None
+
+def startLoadingScreen(mp):
+    print("added loadingscreen")
+    mp.objects.append(LoadingScreen(mp.prefabHandler,{"name":"ldscreen","pos":[0.5,0,0],"rot":[0,-0.7,0],"scale":10,"animation":"grow"}))
+    # stop mouse
+
+
+def endLoadingScreen(mp):
+    # re enable mouse
+    pass
+
+def loadMapAsync(mp,player,filename):
+    mp = MapLoader(filename,player)

@@ -5,34 +5,10 @@ from functools import partial
 import math
 import struct
 
-
-def sinwave(range,duration,note):
-    fs = 44100
-    tempo = 0.5
-    return  (np.sin(2*np.pi*np.arange(fs*duration*tempo)*note/fs)).astype(np.float32)
-
 class AudioHandler:
     def __init__(self):
         self.p = pyaudio.PyAudio()
-        """
-        self.fs = 44100
-        self.stream = self.p.open(format=pyaudio.paFloat32,
-                        channels=1,
-                        rate=self.fs,
-                        output=True
-                        )#,stream_callback=self.callback)
-        self.notes = {}
-        self.ch = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
-        
-        lench = len(self.ch)
-        #C1 = 65.40639132514967/2Hz
-        curr = 65.40639132514967/2
-        for x in range(lench*6):
-            self.notes[self.ch[x%lench]+str(int(x/lench)+1)] = round(curr,2)
-            curr = curr*2**(1/12)
-        self.tempo = 0.5
-        self.currentlyPlaying = None
-        """
+
 
         self.channelVolume = [1,0,0,0,0]
 
@@ -70,20 +46,3 @@ class AudioHandler:
         self.currentlyPlaying[filename] = False  
         stream.stop_stream()
         stream.close()  
-
-
-        
-
-if __name__== '__main__':
-    AH = AudioHandler()
-    
-    """
-    
-
-    melody = ["A3","C4","D4","D4","D4","E4","F4","F4","F4","G4","E4","E4","D4","C4","C4","D4"]
-    bass = ["E3","A3","G3","G3","G3","A3","C4","C4","C4","D4","A3","A3","G3","A3","A3","G3"]
-    dur =  [1 ,1, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 1, 1 ]
-    for n in range(len(melody)):
-        AH.playNote(melody[n],dur[n])
-        time.sleep(0.1*dur[n]*AH.tempo)
-    """

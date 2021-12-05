@@ -15,7 +15,7 @@ from objectHandler import Object3D
 import pyrr
 import random
 from threading import Thread
-from mapLoader import MapLoader
+from mapLoader import MapLoader, loadMapAsync, startLoadingScreen, endLoadingScreen
 from classHandler import *
 from fontHandler import FontHandler
 
@@ -45,7 +45,7 @@ class Game:
         glutInit()
         glutInitDisplayMode(GLUT_RGBA)
 
-        OPENGL_VERSION = 3
+        OPENGL_VERSION = 2
 
         if OPENGL_VERSION == 3:
             glutInitContextVersion (3, 3)
@@ -151,16 +151,21 @@ class Game:
             i=2
             c = self.mp.getObject("card1")
             while c:
-                cards.append(c)
+                if c.isActive:
+                    #th = Thread(target=loadMapAsync, args=(self.mp,self.player,c.map))
+                    #th.start()
+                    startLoadingScreen(self.mp)
+                    #self.mp = MapLoader(c.map,self.player)
+                    return
                 c = self.mp.getObject("card"+str(i))
                 i+=1
-            cur = self.mp.getObject("cursor")
-            if(cur.model.pos[2]<-0.6):
-                self.mp = MapLoader(cards[0].map,self.player)
-            elif(cur.model.pos[2]>0.6):
-                self.mp = MapLoader(cards[2].map,self.player)
-            else:
-                self.mp = MapLoader(cards[1].map,self.player)
+            #cur = self.mp.getObject("cursor")
+            #if(cur.model.pos[2]<-0.6):
+            #    self.mp = MapLoader(cards[0].map,self.player)
+            #elif(cur.model.pos[2]>0.6):
+            #    self.mp = MapLoader(cards[2].map,self.player)
+            #else:
+            #    self.mp = MapLoader(cards[1].map,self.player)
     def showScreen(self):
         now = time.perf_counter()
         glutSetWindowTitle("FPS: "+str(self.FPSCounter.FPS)+" delta: "+str(self.FPSCounter.deltaTime)+" seconds: "+str(self.loopCounter))
@@ -186,16 +191,23 @@ class Game:
                 c = self.mp.getObject("card"+str(i))
                 i+=1
             cur = self.mp.getObject("cursor")
-            cur.model.SetPosition([-0.1,-self.inputHandler.mouseY/self.windowSize[1]*3,self.inputHandler.mouseX/self.windowSize[0]*3])
+            mouseX = self.inputHandler.mouseX/self.windowSize[0]*3-2
+            mouseY = -self.inputHandler.mouseY/self.windowSize[1]*3
+            mouseX = constrain(mouseX, -1.5,1.5)
+            mouseY = constrain(mouseY, -0.75,0.75)
+            cur.model.SetPosition([-0.1,mouseY,mouseX])
             #print(self.inputHandler.mouseX,self.inputHandler.mouseY)
             for x in cards:
                 x.isActive = False
-            if(cur.model.pos[2]<-0.6):
+            if(cur.model.pos[2]<-0.6 and cur.model.pos[1]>-0.5 and cur.model.pos[1]<0.5):
                 cards[0].isActive = True
-            elif(cur.model.pos[2]>0.6):
+                cards[0].mousePos = cur.model.pos
+            elif(cur.model.pos[2]>0.6 and cur.model.pos[1]>-0.5 and cur.model.pos[1]<0.5):
                 cards[2].isActive = True
-            else:
+                cards[2].mousePos = cur.model.pos
+            elif(cur.model.pos[2]<0.6 and cur.model.pos[2]>-0.6 and cur.model.pos[1]>-0.5 and cur.model.pos[1]<0.5):
                 cards[1].isActive = True
+                cards[1].mousePos = cur.model.pos
             
         mapObj = self.mp.getObject("Map1")
         if mapObj:

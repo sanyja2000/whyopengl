@@ -598,6 +598,7 @@ class MenuCard:
         self.model.defaultPosition = np.array(props["pos"])
         self.model.defaultRotation = np.array(props["rot"])
         self.model.defaultScale = props["scale"]
+        self.mousePos = None
         self.map = props["map"]
         self.animationTime = 0
         self.isActive = False
@@ -608,11 +609,48 @@ class MenuCard:
             self.animationTime+=deltaTime*5
             if self.animationTime>1:
                 self.animationTime = 1
+        if self.isActive and not self.mousePos is None:
+            r = np.array([0,self.model.defaultPosition[2]-self.mousePos[2],-self.model.defaultPosition[1]-self.mousePos[1]])
+            rot = lerpVec3(self.model.defaultRotation, self.model.defaultRotation+(r)/5,self.animationTime)
+            self.model.SetRotation(rot)
         if not self.isActive and self.animationTime > 0:
             self.animationTime-=deltaTime*2
             if self.animationTime<0:
                 self.animationTime = 0
+            if not self.mousePos is None:
+                r = np.array([0,self.model.defaultPosition[2]-self.mousePos[2],-self.model.defaultPosition[1]-self.mousePos[1]])
+                rot = lerpVec3(self.model.defaultRotation, self.model.defaultRotation+(r)/5,self.animationTime)
+                self.model.SetRotation(rot)
         s = lerp(self.model.defaultScale,self.model.defaultScale+0.25,self.animationTime)
         
-
         self.model.SetScale(s)
+
+class LoadingScreen:
+    def __init__(self,ph,props):
+        self.name = props["name"]
+        self.model = ph.loadFile("res/simplePlane.obj","res/black.png")#props["picture"])
+        self.model.SetScale(props["scale"])
+        self.model.SetPosition(np.array(props["pos"]))
+        self.model.SetRotation(np.array(props["rot"]))
+        self.model.defaultPosition = np.array(props["pos"])
+        self.model.defaultRotation = np.array(props["rot"])
+        self.model.defaultScale = props["scale"]
+        self.animationTime = 0
+        self.isActive = False
+        self.animation = props["animation"]
+    def draw(self,shaderhandler,renderer,viewMat):
+        self.model.DrawWithShader(shaderhandler.getShader("default"),renderer,viewMat)
+    def update(self,deltaTime,audioHandler):
+        if self.isActive:
+            if self.animationTime<1:
+                if self.animation == "grow":
+                    scl = lerp(0,self.defaultScale,self.animationTime)
+                    self.model.SetScale(scl)
+                    self.animationTime += deltaTime*3
+                
+                if self.animation == "shrink":
+                    scl = lerp(self.defaultScale,0,self.animationTime)
+                    self.model.SetScale(scl)
+                    self.animationTime += deltaTime*3
+                if self.animationTime>1:
+                    self.animationTime = 1

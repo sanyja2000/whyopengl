@@ -1,5 +1,5 @@
 {"type":"menu","objectList":[
-    {"name":"bgPlane","type":"shaderPlane","pos":[0,0,0],"rot":[0,0,1.57],"scale":3.0,"shader":"menuBg"},
+    {"name":"bgPlane","type":"shaderPlane","pos":[1,0,0],"rot":[0,0,1.57],"scale":4.0,"shader":"menuBg"},
     {"name":"camf","type":"camera","pos":[-1,-1,0],"rot":[0,1.57,0],"movement":"fixed"},
     {"name":"card1","type":"menuCard","pos":[0,0,-1],"rot":[0,-1.57,0],"scale":0.5,"picture":"res/cards/shapeOfYou.png","map":"maps/shapeofyou.json"},
     {"name":"card2","type":"menuCard","pos":[0,0,0],"rot":[0,-1.57,0],"scale":0.5,"picture":"res/cards/shapeOfYou.png","map":"maps/blindinglights.json"},
