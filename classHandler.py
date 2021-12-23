@@ -1,6 +1,4 @@
 import math
-from numpy.lib.arraysetops import unique
-from numpy.lib.function_base import delete
 from objectHandler import Object3D
 from renderer import Texture
 import numpy as np
@@ -636,21 +634,39 @@ class LoadingScreen:
         self.model.defaultRotation = np.array(props["rot"])
         self.model.defaultScale = props["scale"]
         self.animationTime = 0
-        self.isActive = False
+        self.isActive = True
+        self.done = False
         self.animation = props["animation"]
+        if self.animation == "grow":
+            self.model.SetScale(0)
+        self.function = props["function"] if "function" in props else None
+
     def draw(self,shaderhandler,renderer,viewMat):
-        self.model.DrawWithShader(shaderhandler.getShader("default"),renderer,viewMat)
+        #self.model.DrawWithShader(shaderhandler.getShader("default"),renderer,viewMat)
+        if self.isActive:
+            self.model.DrawWithShader(shaderhandler.getShader("default"),renderer,viewMat)
     def update(self,deltaTime,audioHandler):
         if self.isActive:
             if self.animationTime<1:
                 if self.animation == "grow":
-                    scl = lerp(0,self.defaultScale,self.animationTime)
+                    scl = lerp(0,self.model.defaultScale,self.animationTime)
                     self.model.SetScale(scl)
-                    self.animationTime += deltaTime*3
+                    self.animationTime += deltaTime*0.7
                 
                 if self.animation == "shrink":
-                    scl = lerp(self.defaultScale,0,self.animationTime)
+                    scl = lerp(self.model.defaultScale,0,self.animationTime)
                     self.model.SetScale(scl)
-                    self.animationTime += deltaTime*3
+                    self.animationTime += deltaTime*0.4
+                
+                
                 if self.animationTime>1:
+                    self.done = True
                     self.animationTime = 1
+            if self.done and self.function != None:
+                print("function ran")
+                self.function()
+                self.isActive = False
+                self.done = False
+                return
+    def moveWithKeys(self,inputHandler,deltaTime):
+        pass

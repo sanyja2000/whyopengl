@@ -2,9 +2,11 @@ import numpy as np
 import json
 from classHandler import *
 from objectHandler import prefabHandler
+from functools import partial
 
 class MapLoader:
     def __init__(self,filename,player):
+        print("loading map:"+filename)
         self.mapFile = ""
         self.objects = []
         self.prefabHandler = prefabHandler()
@@ -39,21 +41,42 @@ class MapLoader:
                 else:
                     print("Unknown type for object in json: "+obj["type"])
                     print(obj)
+    def loadNewMap(self,filename,player):
+        self.__init__(filename,player)
     def getObject(self,objName):
         for o in self.objects:
             if o.name == objName:
                 return o
         return None
 
-def startLoadingScreen(mp):
+
+
+def startLoadingScreen(maploader,map,player,inputhandler):
     print("added loadingscreen")
-    mp.objects.append(LoadingScreen(mp.prefabHandler,{"name":"ldscreen","pos":[0.5,0,0],"rot":[0,-0.7,0],"scale":10,"animation":"grow"}))
+    
+    func = partial(loadMapAsync,maploader,map,player,inputhandler)
+    
+    maploader.objects.append(LoadingScreen(maploader.prefabHandler,{"name":"ldscreen","pos":[-0.2,0,0],"rot":[0,0,1.57],"scale":1.5,"animation":"grow","function":func}))
+    
     # stop mouse
+    inputhandler.mouseLocked = True
 
+def unlockMouse(inputhandler):
+    inputhandler.mouseLocked = False
 
-def endLoadingScreen(mp):
-    # re enable mouse
-    pass
+def loadMapAsync(maploader,filename,player,inputhandler):
+    #maploader.objects = []
+    #maploader.type = "load"
 
-def loadMapAsync(mp,player,filename):
-    mp = MapLoader(filename,player)
+    inputhandler.mouseX = 650
+    inputhandler.mouseY = 0
+    inputhandler.interactingWith = None
+    func = partial(unlockMouse,inputhandler)
+
+    maploader.loadNewMap(filename,player)#MapLoader(filename,player)
+    if filename == "maps/menu.json":
+        maploader.objects.append(LoadingScreen(maploader.prefabHandler,{"name":"ldscreen","pos":[-0.2,0,0],"rot":[0,0,1.57],"scale":1.5,"animation":"shrink","function":func}))
+    else:
+        maploader.objects.append(LoadingScreen(maploader.prefabHandler,{"name":"ldscreen","pos":[0,1,-4.5],"rot":[1.57,0,1.57],"scale":1.5,"animation":"shrink","function":func}))
+    
+    

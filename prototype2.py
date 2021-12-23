@@ -15,7 +15,7 @@ from objectHandler import Object3D
 import pyrr
 import random
 from threading import Thread
-from mapLoader import MapLoader, loadMapAsync, startLoadingScreen, endLoadingScreen
+from mapLoader import MapLoader, startLoadingScreen
 from classHandler import *
 from fontHandler import FontHandler
 
@@ -45,7 +45,7 @@ class Game:
         glutInit()
         glutInitDisplayMode(GLUT_RGBA)
 
-        OPENGL_VERSION = 2
+        OPENGL_VERSION = 3
 
         if OPENGL_VERSION == 3:
             glutInitContextVersion (3, 3)
@@ -103,9 +103,7 @@ class Game:
 
         self.audioHandler = AudioHandler()
         
-            
-        self.bulletModelPrefab = Object3D("res/bullet1.obj","res/bullet1.png")
-        self.bulletModels = []
+        
 
         self.proj = pyrr.matrix44.create_perspective_projection(45.0, self.windowSize[0]/self.windowSize[1], 1.0, 10.0)
 
@@ -154,8 +152,8 @@ class Game:
                 if c.isActive:
                     #th = Thread(target=loadMapAsync, args=(self.mp,self.player,c.map))
                     #th.start()
-                    startLoadingScreen(self.mp)
-                    #self.mp = MapLoader(c.map,self.player)
+                    startLoadingScreen(self.mp,c.map,self.player,self.inputHandler)
+                    
                     return
                 c = self.mp.getObject("card"+str(i))
                 i+=1
@@ -167,6 +165,8 @@ class Game:
             #else:
             #    self.mp = MapLoader(cards[1].map,self.player)
     def showScreen(self):
+        if self.mp.type == "load":
+            return
         now = time.perf_counter()
         glutSetWindowTitle("FPS: "+str(self.FPSCounter.FPS)+" delta: "+str(self.FPSCounter.deltaTime)+" seconds: "+str(self.loopCounter))
     
@@ -219,9 +219,11 @@ class Game:
             if card != None and hasattr(card,"openTime"):
                 temparr.append([0,-10,0,(now-card.openTime)*70/22])
             mapObj.clearedPoints = np.array(temparr)
-        if b'm' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'm'] == 1:
-            self.mp = MapLoader("maps/menu.json",self.player)
-
+        if self.inputHandler.isKeyDown(b'm'):
+            #startLoadingScreen(self.mp)
+            if self.mp.type != "menu":
+                startLoadingScreen(self.mp,"maps/menu.json",self.player,self.inputHandler)#MapLoader("maps/menu.json",self.player)
+                self.inputHandler.interactingWith = self.mp.getObject("ldscreen")
         if b'l' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'l'] == 1:
             self.mp.getObject("crystal").open()
 
