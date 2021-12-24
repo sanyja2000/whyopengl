@@ -45,6 +45,8 @@ class Game:
         glutInit()
         glutInitDisplayMode(GLUT_RGBA)
 
+        self.knownCards = 0
+
         OPENGL_VERSION = 3
 
         if OPENGL_VERSION == 3:
@@ -127,7 +129,7 @@ class Game:
 
         #self.mp = MapLoader("maps/test2.json")
 
-        self.mp = MapLoader("maps/menu.json",self.player)
+        self.mp = MapLoader("maps/menu.json",self.player,unlockedCards=self.knownCards)
 
         self.loopCounter = 18
         #self.audioSounds = ["res/audio/lastchristmas_drum.wav","res/audio/lastchristmas_bass.wav","res/audio/lastchristmas_chords.wav","res/audio/lastchristmas_melody.wav"]
@@ -262,10 +264,17 @@ class Game:
                     self.inputHandler.interactingWith = i
                     self.player.animating = 1.0
             if (isinstance(i, TeleportCrystal) and dist(i.model.pos,self.player.pos)<1.5 and not i.isInteracting):
-                popupText = "Press E to travel"    
+                popupText = "Press E to travel"
+                if self.inputHandler.isKeyDown(b'e'):
+                    # load menu with animation
+                    self.knownCards = self.knownCards | mapObj.cardNum
+                    # stop music
+                    solvedPuzzles = 0
+                    self.mp = MapLoader("maps/menu.json",self.player,unlockedCards=self.knownCards)
+                    break
             if (isinstance(i, PuzzlePlane) or isinstance(i, SlidePlane)) and i.isInteracting:
                 popupText = i.interactText
-                if self.inputHandler.isKeyDown(b'q'):
+                if self.inputHandler.isKeyDown(b'q') or i.solved:
                     i.isInteracting = False
                     self.inputHandler.interactingWith = None
                     self.player.animating = 1.0

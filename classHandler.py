@@ -22,6 +22,7 @@ class Map:
     def __init__(self,ph,props):
         self.objFile = props["file"]
         self.name = props["name"]
+        self.cardNum = props["cardNum"]
         self.model = ph.loadFile(props["file"],props["texture"],textureRepeat=True)
         self.model.SetScale(10)
         self.model.SetPosition(np.array(props["pos"]))
@@ -40,34 +41,6 @@ class Map:
         parameters = {"u_Time":time.perf_counter(),"4fv,clearedPoints":np.array(points),"numPoints":len(self.clearedPoints)}
         self.model.DrawWithShader(shaderhandler.getShader("map"),renderer,viewMat,options=parameters)
         #self.model.DrawWithShader(shaderhandler.getShader("default"),renderer,viewMat)
-
-class Noteblock13:
-    def __init__(self,ph,props):
-        self.puzzleId = props["puzzleId"]
-        self.name = props["name"]
-        self.model = ph.loadFile("res/noteblock1.obj","res/fire.png")
-        self.model.SetScale(props["scale"])
-        self.model.SetPosition(np.array(props["pos"]))
-        self.model.SetRotation(np.array(props["rot"]))
-        self.note = props["note"]
-        self.lastPlayed = 0
-       
-    def draw(self,shaderhandler,renderer,viewMat):
-        self.model.DrawWithShader(shaderhandler.getShader("noteblock"),renderer,viewMat,options={"u_Time":time.perf_counter(),"u_LastPlayed":self.lastPlayed})
-
-class Notepiece13:
-    def __init__(self,ph,props):
-        self.puzzleId = props["puzzleId"]
-        self.name = props["name"]
-        self.model = ph.loadFile("res/notepiece.obj","res/fire.png")
-        self.model.SetScale(props["scale"])
-        self.model.SetPosition(np.array(props["pos"]))
-        self.model.SetRotation(np.array(props["rot"]))
-        self.note = props["note"]
-        self.lastPlayed = 0
-       
-    def draw(self,shaderhandler,renderer,viewMat):
-        self.model.DrawWithShader(shaderhandler.getShader("notepiece"),renderer,viewMat,options={"u_Time":time.perf_counter(),"u_LastPlayed":self.lastPlayed})
 
 
 class Door:
@@ -293,14 +266,14 @@ class PuzzlePlane:
                     yline.append(p)
                     walls.append(p)
                 elif(self.mapfile[y][x] == "G"):
-                    yline.append(PuzzleBox("G",ph.loadFile("res/simpleBox.obj","res/boxNoteG.png"),self.dimensions-x,self.dimensions-y,self.boxScale,self.model,self.dimensions,self.rotationOffset))
+                    yline.append(PuzzleBox("G",ph.loadFile("res/simpleBox.obj","res/boxNote.png"),self.dimensions-x,self.dimensions-y,self.boxScale,self.model,self.dimensions,self.rotationOffset))
                 elif(self.mapfile[y][x] == "p"):
                     yline.append(PuzzleBox("p",ph.loadFile("res/simpleBox.obj","res/boxPlayer.png"),self.dimensions-x,self.dimensions-y,self.boxScale,self.model,self.dimensions,self.rotationOffset))
                 elif(self.mapfile[y][x] == "g"):
                     yline.append(PuzzleBox("g",ph.loadFile("res/simpleBox.obj","res/boxNoteGFinish.png"),self.dimensions-x,self.dimensions-y,self.boxScale,self.model,self.dimensions,self.rotationOffset))
                     self.solvedPositions.append([x,y])
                 elif(self.mapfile[y][x] == "s"):
-                    yline.append(PuzzleBox("G",ph.loadFile("res/simpleBox.obj","res/boxNoteG.png"),self.dimensions-x,self.dimensions-y,self.boxScale,self.model,self.dimensions,self.rotationOffset))
+                    yline.append(PuzzleBox("G",ph.loadFile("res/simpleBox.obj","res/boxNoteCorrect.png"),self.dimensions-x,self.dimensions-y,self.boxScale,self.model,self.dimensions,self.rotationOffset))
                     self.solvedPositions.append([x,y])
                 else:
                     yline.append(None)
@@ -339,12 +312,14 @@ class PuzzlePlane:
                         self.minigameModels[self.dimensions-newPos[1]][self.dimensions-newPos[0]] = None
                         nextPlace.moveTo(newPos[0]+dir[0],newPos[1]+dir[1])
                         self.minigameModels[self.dimensions-newPos[1]-dir[1]][self.dimensions-newPos[0]-dir[0]] = nextPlace
-                        
+                        nextPlace.model.texture = Texture("res/boxNote.png")
                     elif self.minigameModels[self.dimensions-newPos[1]-dir[1]][self.dimensions-newPos[0]-dir[0]].name == "g":
                         self.minigameModels[self.dimensions-newPos[1]][self.dimensions-newPos[0]] = None
                         nextPlace.moveTo(newPos[0]+dir[0],newPos[1]+dir[1])
                         self.minigameModels[self.dimensions-newPos[1]-dir[1]][self.dimensions-newPos[0]-dir[0]] = nextPlace
-                        #self.solved = True
+                        # here we push it into a target place
+                        # change color of model
+                        nextPlace.model.texture = Texture("res/boxNoteCorrect.png")
                     else:
                         canMove = False
                 elif nextPlace.name == "g":
@@ -426,7 +401,7 @@ class SlidePlane:
         self.isInteracting = False
         self.justMoved = False
 
-        self.size = [4,3]
+        self.size = [3,2]
         self.boxScale = 1/self.size[0]*0.9
         self.image = props["picture"]
 
@@ -589,7 +564,10 @@ class Camera:
 class MenuCard:
     def __init__(self,ph,props):
         self.name = props["name"]
-        self.model = ph.loadFile("res/card.obj",props["picture"])
+        if props["revealed"]:
+            self.model = ph.loadFile("res/card.obj",props["picture"])
+        else:
+            self.model = ph.loadFile("res/card.obj","res/cards/unknown.png")
         self.model.SetScale(props["scale"])
         self.model.SetPosition(np.array(props["pos"]))
         self.model.SetRotation(np.array(props["rot"]))
@@ -600,10 +578,14 @@ class MenuCard:
         self.map = props["map"]
         self.animationTime = 0
         self.isActive = False
+        self.soundPlayed = False
     def draw(self,shaderhandler,renderer,viewMat):
         self.model.DrawWithShader(shaderhandler.getShader("default_transparent"),renderer,viewMat)
     def update(self,deltaTime,audioHandler):
         if self.isActive and self.animationTime<1:
+            if not self.soundPlayed:
+                audioHandler.playSound("res/audio/card_sound.wav")
+                self.soundPlayed = True
             self.animationTime+=deltaTime*5
             if self.animationTime>1:
                 self.animationTime = 1
@@ -612,6 +594,7 @@ class MenuCard:
             rot = lerpVec3(self.model.defaultRotation, self.model.defaultRotation+(r)/5,self.animationTime)
             self.model.SetRotation(rot)
         if not self.isActive and self.animationTime > 0:
+            self.soundPlayed = False
             self.animationTime-=deltaTime*2
             if self.animationTime<0:
                 self.animationTime = 0

@@ -5,7 +5,7 @@ from objectHandler import prefabHandler
 from functools import partial
 
 class MapLoader:
-    def __init__(self,filename,player):
+    def __init__(self,filename,player,unlockedCards=0):
         print("loading map:"+filename)
         self.mapFile = ""
         self.objects = []
@@ -29,7 +29,15 @@ class MapLoader:
                 elif obj["type"]=="teleportCrystal":
                     self.objects.append(TeleportCrystal(self.prefabHandler,obj))
                 elif obj["type"]=="menuCard":
-                    self.objects.append(MenuCard(self.prefabHandler,obj))
+                    obj["revealed"] = False
+                    if obj["name"] == "card1" and unlockedCards & 1 == 1:
+                        obj["revealed"] = True
+                    if obj["name"] == "card2" and unlockedCards & 2 == 2:
+                        obj["revealed"] = True
+                    if obj["name"] == "card3" and unlockedCards & 4 == 4:
+                        obj["revealed"] = True
+                    self.objects.append(MenuCard(self.prefabHandler,obj))  
+
                 elif obj["type"]=="camera":
                     #self.objects.append(Camera(self.prefabHandler,obj))
                     player.camera = Camera(obj)

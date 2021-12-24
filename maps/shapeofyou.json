@@ -1,14 +1,10 @@
 {"type":"playable","objectList":[
-{"name":"Map1","type":"mapObject","file":"res/roomtest.obj","texture":"res/wall_top.png","pos":[0,10,0],"rot":[0,0,0]},
-{"name":"camf","type":"camera","pos":[0,0,-5],"rot":[0,0,0],"movement":"free"},
-{"name":"pp1","puzzleId":"01","type":"puzzlePlane","pos":[-5,0.25,-5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/puzzles/sokoban10.txt"},
-{"name":"pp2","puzzleId":"01","type":"puzzlePlane","pos":[5,0.25,-5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/puzzles/sokoban0.txt"},
-{"name":"pp3","puzzleId":"01","type":"puzzlePlane","pos":[-5,0.25,5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/puzzles/sokoban2.txt"},
-{"name":"pp4","puzzleId":"01","type":"puzzlePlane","pos":[5,0.25,5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/puzzles/sokoban3.txt"},
-{"name":"crystal","type":"teleportCrystal","picture":"res/cards/shapeOfYou.png","pos":[0,-1,0],"rot":[0,0,0],"scale":0.25,"beatLength":17.9,"beats":["res/audio/lastchristmas_drum.wav","res/audio/lastchristmas_bass.wav","res/audio/lastchristmas_chords.wav","res/audio/lastchristmas_melody.wav"]},
-{"type":"comment", "content":[
-        {"name":"note1","type":"decoration","pos":[-3,1,-3],"rot":[0,0,0],"scale":0.25,"file":"res/notesmall.obj","texture":"res/crystal.png"},
-        {"name":"sp1","puzzleId":"01","type":"snakePlane","pos":[-5,0.25,-1],"rot":[0,-1.57,0],"scale":0.25},
-        {"name":"cyl","type":"decoration","pos":[0,1,0],"rot":[0,0,0],"scale":0.25,"file":"res/crystal_holder.obj","texture":"res/crystal_holder_color.png"},
-        {"name":"crystal","type":"decoration","pos":[0,1,0],"rot":[0,0,0],"scale":0.25,"file":"res/crystal.obj","texture":"res/crystal.png"}]}
-]}
+    {"name":"Map1","type":"mapObject","cardNum":1,"file":"res/roomtest.obj","texture":"res/wall_top.png","pos":[0,10,0],"rot":[0,0,0]},
+    {"name":"camf","type":"camera","pos":[0,0,-5],"rot":[0,0,0],"movement":"free"},
+    {"name":"pp1","puzzleId":"01","type":"puzzlePlane","pos":[-5,0.25,-5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/puzzles/sokoban6.txt"},
+    {"name":"pp2","puzzleId":"01","type":"puzzlePlane","pos":[5,0.25,-5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/puzzles/sokoban8.txt"},
+    {"name":"pp3","puzzleId":"01","type":"puzzlePlane","pos":[5,0.25,5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/puzzles/sokoban5.txt"},
+    {"name":"pp4","puzzleId":"01","type":"slidePlane","pos":[-5,0.25,5],"rot":[0,-1.57,0],"scale":0.25,"picture":"res/puzzles/sou.png"},
+    {"name":"crystal","type":"teleportCrystal","picture":"res/cards/shapeOfYou.png","pos":[0,-1,0],"rot":[0,0,0],"scale":0.25,"beatLength":4.7,"beats":["res/audio/shapeofyou_drum1.wav","res/audio/shapeofyou_drum2.wav","res/audio/shapeofyou_bass.wav","res/audio/shapeofyou_melody.wav"]}
+    ]
+}

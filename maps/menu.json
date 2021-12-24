@@ -3,7 +3,7 @@
     {"name":"camf","type":"camera","pos":[-1,-1,0],"rot":[0,1.57,0],"movement":"fixed"},
     {"name":"card1","type":"menuCard","pos":[0,0,-1],"rot":[0,-1.57,0],"scale":0.5,"picture":"res/cards/shapeOfYou.png","map":"maps/shapeofyou.json"},
     {"name":"card2","type":"menuCard","pos":[0,0,0],"rot":[0,-1.57,0],"scale":0.5,"picture":"res/cards/blindingLights.png","map":"maps/blindinglights.json"},
-    {"name":"card3","type":"menuCard","pos":[0,0,1],"rot":[0,-1.57,0],"scale":0.5,"picture":"res/cards/aceOfSpades.png","map":"maps/test2.json"},
+    {"name":"card3","type":"menuCard","pos":[0,0,1],"rot":[0,-1.57,0],"scale":0.5,"picture":"res/cards/lastchristmas.png","map":"maps/lastchristmas.json"},
     {"name":"cursor","type":"decoration","pos":[0,0,0],"rot":[0,0,0],"scale":0.05,"file":"res/crystal.obj","texture":"res/crystal.png"}
     ]
 }    
