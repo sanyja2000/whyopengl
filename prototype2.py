@@ -146,7 +146,20 @@ class Game:
         self.inputHandler.changeWindowSize(self.windowSize)
     def mouseClicked(self,*args):
         
-        if self.mp.type == "menu":
+        if args[0] == 3:
+            # Scroll up
+            # Volume up
+            if self.audioHandler.masterVolume<1:
+                self.audioHandler.masterVolume += 0.1
+            
+
+        elif args[0] == 4:
+            # Scroll down
+            # Volume down
+            if self.audioHandler.masterVolume>0:
+                self.audioHandler.masterVolume -= 0.1
+
+        elif self.mp.type == "menu":
             cards = []
             i=2
             c = self.mp.getObject("card1")

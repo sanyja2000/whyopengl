@@ -9,7 +9,7 @@ class AudioHandler:
     def __init__(self):
         self.p = pyaudio.PyAudio()
 
-
+        self.masterVolume = 1
         self.channelVolume = [1,0,0,0,0]
         self.isStopped = [0,0,0,0,0]
 
@@ -41,9 +41,8 @@ class AudioHandler:
         # play stream (3)
         while len(data) > 0:
             if self.isStopped[volumeIndex]:
-                print("stopped sound")
                 break
-            buf = np.frombuffer(data,dtype=np.int16)*self.channelVolume[volumeIndex]
+            buf = np.frombuffer(data,dtype=np.int16)*self.channelVolume[volumeIndex]*self.masterVolume
             outdata = buf.astype(np.int16).tostring()
             stream.write(outdata)
             data = wf.readframes(1024)
