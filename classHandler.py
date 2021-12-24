@@ -1,12 +1,14 @@
 import math
+from typing import Text
 from objectHandler import Object3D
-from renderer import Texture
+from renderer import IndexBuffer, Texture, VertexArray, VertexBuffer, VertexBufferLayout
 import numpy as np
 import time
 from puzzles import *
 from PIL import Image
 import pyrr
 import random
+from OpenGL.GLUT import *
 
 def lerp(f, t, n):
     return f*(1-n)+t*n
@@ -655,3 +657,87 @@ class LoadingScreen:
                 return
     def moveWithKeys(self,inputHandler,deltaTime):
         pass
+
+
+
+class PauseMenu:
+    def __init__(self, hudShader):
+        self.backgroundTexture = Texture("res/pauseMenu.png")
+        self.points = np.array([0.33, -1, 0.0, 0.0,
+                                1, -1, 1.0, 0.0,
+                                1, 1, 1.0, 1.0,
+                                0.33, 1, 0.0, 1.0],dtype='float32')
+        self.shader = hudShader
+
+        self.indices = np.array([0,1,2, 2,3,0])
+        self.va = VertexArray()
+        self.vb = VertexBuffer(self.points)
+        self.layout = VertexBufferLayout()
+        self.layout.PushF(2)
+        self.layout.PushF(2)
+        self.va.AddBuffer(self.vb, self.layout)
+        self.ib = IndexBuffer(self.indices, 6)
+        self.ownTime = 0
+        self.currentlySelected = 0
+        self.menuText = ["Resume", "Main Menu", "Quit Game"]
+        self.openPercent = 0
+        self.moving = 0
+        self.openSpeed = 6
+        self.backToMainMenu = False
+    def draw(self,fontHandler,renderer):
+        self.ownTime += 1
+
+        # draw background
+        
+        self.backgroundTexture.Bind()
+        self.shader.Bind()
+
+        self.shader.SetUniform1i("u_Texture",0)
+        self.shader.SetUniform1i("u_time",self.ownTime)
+        self.shader.SetUniform1f("xcoord",(1-self.openPercent)*0.66)
+        renderer.Draw(self.va,self.ib,self.shader)
+
+        # draw text
+        
+        fontHandler.drawText("Pause Menu",-1*len("Pause Menu")/50+0.7+(1-self.openPercent)*0.66,0.6,0.06,renderer)
+
+        for i in range(len(self.menuText)):
+            text = self.menuText[i]
+            if i == self.currentlySelected:
+                text = "> "+text+" <" 
+            fontHandler.drawText(text,-1*len(text)/50+0.7+(1-self.openPercent)*0.66,0.3-i*0.4,0.05,renderer)
+                        
+    def update(self,deltaTime,audioHandler,game):
+        if game.mp.type == "menu":
+            self.menuText = ["Resume", "Quit Game"]
+        else:
+            self.menuText = ["Resume", "Main Menu", "Quit Game"]
+        self.openPercent += self.moving*deltaTime
+        if self.openPercent>1:
+            self.moving = 0
+            self.openPercent = 1
+        if self.openPercent<0:
+            self.moving = 0
+            self.openPercent = 0
+    def open(self):
+        self.currentlySelected = 0
+        self.moving = self.openSpeed
+    def close(self):
+        self.moving = -1*self.openSpeed
+    def moveWithKeys(self,inputHandler,deltaTime):
+        if inputHandler.isKeyDown(b's'):
+            self.currentlySelected = (self.currentlySelected+1)%len(self.menuText)
+        if inputHandler.isKeyDown(b'w'):
+            self.currentlySelected = (self.currentlySelected-1)%len(self.menuText)
+        if inputHandler.isKeyDown(b'\r') or inputHandler.isKeyDown(b' '):
+            if self.menuText[self.currentlySelected] == "Resume":
+                # Resume
+                self.close()
+            elif self.menuText[self.currentlySelected] == "Main Menu":
+                # Load main menu
+                self.close()
+                self.backToMainMenu = True
+            elif self.menuText[self.currentlySelected] == "Quit Game":
+                # Exit game
+                glutLeaveMainLoop()
+                #sys.quit() ?

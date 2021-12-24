@@ -84,15 +84,14 @@ class Game:
             self.shaderHandler.loadShader("default","shaders/3.3/vertex_new.shader","shaders/3.3/fragment_new.shader")
             self.shaderHandler.loadShader("default_transparent","shaders/3.3/vertex_new.shader","shaders/3.3/fragment_def_transparent.shader")
             self.shaderHandler.loadShader("map","shaders/3.3/vertex_new_room.shader","shaders/3.3/fragment_map_infested.shader")
-            self.shaderHandler.loadShader("noteblock","shaders/3.3/vertex_noteblock.shader","shaders/3.3/fragment_noteblock.shader")
             self.shaderHandler.loadShader("font","shaders/3.3/vertex_font.shader","shaders/3.3/fragment_font.shader")
             self.shaderHandler.loadShader("menuBg","shaders/3.3/vertex_new.shader","shaders/3.3/menuBg.shader")
+            self.shaderHandler.loadShader("hud","shaders/3.3/vertex_hud.shader","shaders/3.3/fragment_hud.shader")
         else:
+            # TODO: Add pauseMenu shaders
             self.shaderHandler.loadShader("default","shaders/2.1/vertex_new.shader","shaders/2.1/fragment_new.shader")
             self.shaderHandler.loadShader("default_transparent","shaders/2.1/vertex_new.shader","shaders/2.1/fragment_def_transparent.shader")
             self.shaderHandler.loadShader("map","shaders/2.1/vertex_new_room.shader","shaders/2.1/fragment_map_infested.shader")
-            self.shaderHandler.loadShader("noteblock","shaders/2.1/vertex_noteblock.shader","shaders/2.1/fragment_noteblock.shader")    
-            self.shaderHandler.loadShader("notepiece","shaders/2.1/vertex_notepiece.shader","shaders/2.1/fragment_notepiece.shader")    
             self.shaderHandler.loadShader("font","shaders/2.1/vertex_font.shader","shaders/2.1/fragment_font.shader")
             self.shaderHandler.loadShader("menuBg","shaders/2.1/vertex_new.shader","shaders/2.1/menuBg.shader")
         #print("Error: ")
@@ -102,7 +101,7 @@ class Game:
 
         self.audioHandler = AudioHandler()
         
-        
+        self.pauseMenu = PauseMenu(self.shaderHandler.getShader("hud"))
 
         self.proj = pyrr.matrix44.create_perspective_projection(45.0, self.windowSize[0]/self.windowSize[1], 1.0, 10.0)
 
@@ -174,6 +173,13 @@ class Game:
 
 
         if self.inputHandler.isKeyDown(b'\x1b'):
+            if self.pauseMenu.openPercent == 1:
+                self.pauseMenu.close()
+                self.inputHandler.interactingWith = None
+            if self.pauseMenu.openPercent == 0:
+                self.pauseMenu.open()
+                self.inputHandler.interactingWith = self.pauseMenu
+            """
             if self.inputHandler.interactingWith == None:
                 # ESC menu
 
@@ -185,9 +191,13 @@ class Game:
                 self.inputHandler.interactingWith.isInteracting = False
                 self.inputHandler.interactingWith = None
                 self.player.animating = 1.0
-            
+            """
         
-        
+        if self.pauseMenu.backToMainMenu:
+            self.pauseMenu.backToMainMenu = False
+            self.mp = MapLoader("maps/menu.json",self.player,unlockedCards=self.knownCards)
+
+
         now = time.perf_counter()
         glutSetWindowTitle("FPS: "+str(self.FPSCounter.FPS)+" delta: "+str(self.FPSCounter.deltaTime)+" seconds: "+str(self.loopCounter))
     
@@ -291,7 +301,7 @@ class Game:
             if (isinstance(i, TeleportCrystal) and dist(i.model.pos,self.player.pos)<1.5 and not i.isInteracting and i.opened):
                 popupText = "Press E to travel"
                 if self.inputHandler.isKeyDown(b'e'):
-                    # load menu with animation
+                    # TODO: load menu with animation
                     self.knownCards = self.knownCards | mapObj.cardNum
                     # stop music
                     solvedPuzzles = 0
@@ -319,10 +329,13 @@ class Game:
                 card.openTime = now
                 #self.audioHandler.playSound(card.sound)
                 card.open()
-            
-
         
         self.fontHandler.drawText(popupText,-1*len(popupText)/50,-0.6,0.05,self.renderer)
+
+        # Draw in game menu
+        self.pauseMenu.draw(self.fontHandler,self.renderer)
+        self.pauseMenu.update(self.FPSCounter.deltaTime,self.audioHandler,self)
+
         glutSwapBuffers()
         self.inputHandler.updateKeysDown()
         #self.audioHandler.update()

@@ -33,10 +33,11 @@ class Player:
         self.lastWalkSound = 0
         self.fallSound = False
     def moveWithKeys(self,inputHandler,deltaTime,mapObjects):
-        if self.camera.movement == "fixed":
-            return
+
         if not inputHandler.interactingWith is None:
             inputHandler.interactingWith.moveWithKeys(inputHandler,deltaTime)
+            return
+        if self.camera.movement == "fixed":
             return
         self.vel[0] = self.maxVelocity*math.cos(-self.xAng)*deltaTime
         self.vel[2] = self.maxVelocity*math.sin(-self.xAng)*deltaTime
@@ -91,7 +92,7 @@ class Player:
 
         
 
-        if not inputHandler.interactingWith is None:
+        if not inputHandler.interactingWith is None and hasattr(inputHandler.interactingWith,"model"):
             self.lastInteractedWith = inputHandler.interactingWith
             a = lerp(self.yAng,0.7853,(1-self.animating))
             b = lerp(self.xAng%6.28,3.1415,(1-self.animating))
