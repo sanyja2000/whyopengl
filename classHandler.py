@@ -382,7 +382,7 @@ class SlidePlane:
         self.pos = props["pos"]
         self.rot = props["rot"]
         self.scl = props["scale"]
-        self.interactText = "Press Q to leave - Press R to restart puzzle"
+        self.interactText = "Press Q to leave"
         self.prefabHandler = ph
         self.model = ph.loadFile("res/squarePlane.obj","res/sandstoneTextureLight.png")
         self.model.SetScale(props["scale"]*1.25)
@@ -448,8 +448,6 @@ class SlidePlane:
                         return
         self.solved = True
     def moveWithKeys(self,inputHandler,deltaTime):
-        if inputHandler.isKeyDown(b'r'):
-            self.restart()
         if self.solved:
             return
         direction = [0,0]
