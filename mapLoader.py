@@ -11,6 +11,7 @@ class MapLoader:
         self.objects = []
         self.prefabHandler = prefabHandler()
         self.puzzle = None
+        self.beatLength = 115
         player.camera = Camera({"name":"camf","pos":[0,0,0],"rot":[0,0,0],"movement":"free"})
         with open(filename, "r") as f:
             self.JSONContent = json.loads("".join(f.readlines()))

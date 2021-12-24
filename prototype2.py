@@ -131,7 +131,7 @@ class Game:
 
         self.mp = MapLoader("maps/menu.json",self.player,unlockedCards=self.knownCards)
 
-        self.loopCounter = 18
+        self.loopCounter = 200
         #self.audioSounds = ["res/audio/lastchristmas_drum.wav","res/audio/lastchristmas_bass.wav","res/audio/lastchristmas_chords.wav","res/audio/lastchristmas_melody.wav"]
 
 
@@ -152,20 +152,11 @@ class Game:
             c = self.mp.getObject("card1")
             while c:
                 if c.isActive:
-                    #th = Thread(target=loadMapAsync, args=(self.mp,self.player,c.map))
-                    #th.start()
                     startLoadingScreen(self.mp,c.map,self.player,self.inputHandler)
-                    
+                    self.audioHandler.stopAll()
                     return
                 c = self.mp.getObject("card"+str(i))
                 i+=1
-            #cur = self.mp.getObject("cursor")
-            #if(cur.model.pos[2]<-0.6):
-            #    self.mp = MapLoader(cards[0].map,self.player)
-            #elif(cur.model.pos[2]>0.6):
-            #    self.mp = MapLoader(cards[2].map,self.player)
-            #else:
-            #    self.mp = MapLoader(cards[1].map,self.player)
     def showScreen(self):
         if self.mp.type == "load":
             return
@@ -185,6 +176,11 @@ class Game:
 
 
         if self.mp.type == "menu":
+            if self.loopCounter >= self.mp.beatLength:
+                self.loopCounter = 0
+                self.audioHandler.playSound("res/audio/menu_music.wav")
+            # Menu music
+            # Hovering over cards in menu
             cards = []
             i=2
             c = self.mp.getObject("card1")
@@ -224,6 +220,7 @@ class Game:
         if self.inputHandler.isKeyDown(b'm'):
             #startLoadingScreen(self.mp)
             if self.mp.type != "menu":
+                self.audioHandler.stopAll()
                 startLoadingScreen(self.mp,"maps/menu.json",self.player,self.inputHandler)#MapLoader("maps/menu.json",self.player)
                 self.inputHandler.interactingWith = self.mp.getObject("ldscreen")
         if b'l' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'l'] == 1:
@@ -271,6 +268,7 @@ class Game:
                     # stop music
                     solvedPuzzles = 0
                     self.mp = MapLoader("maps/menu.json",self.player,unlockedCards=self.knownCards)
+                    self.audioHandler.stopAll()
                     break
             if (isinstance(i, PuzzlePlane) or isinstance(i, SlidePlane)) and i.isInteracting:
                 popupText = i.interactText

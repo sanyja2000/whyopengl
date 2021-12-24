@@ -11,6 +11,7 @@ class AudioHandler:
 
 
         self.channelVolume = [1,0,0,0,0]
+        self.isStopped = [0,0,0,0,0]
 
         self.currentlyPlaying = {}
         #self.stream.start_stream()
@@ -21,6 +22,7 @@ class AudioHandler:
         return False
 
     def playSound(self,filename,volumeIndex=0):
+        self.isStopped[volumeIndex] = 0
         wf = wave.open(filename, 'rb')
         stream = self.p.open(format=self.p.get_format_from_width(wf.getsampwidth()),
                         channels=wf.getnchannels(),
@@ -38,6 +40,9 @@ class AudioHandler:
         self.currentlyPlaying[filename] = True
         # play stream (3)
         while len(data) > 0:
+            if self.isStopped[volumeIndex]:
+                print("stopped sound")
+                break
             buf = np.frombuffer(data,dtype=np.int16)*self.channelVolume[volumeIndex]
             outdata = buf.astype(np.int16).tostring()
             stream.write(outdata)
@@ -45,4 +50,7 @@ class AudioHandler:
             #i=(i+0.01)%1
         self.currentlyPlaying[filename] = False  
         stream.stop_stream()
-        stream.close()  
+        stream.close()
+    def stopAll(self):
+        self.isStopped = [1,1,1,1,1]
+
