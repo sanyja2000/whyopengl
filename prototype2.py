@@ -19,9 +19,6 @@ from mapLoader import MapLoader, startLoadingScreen
 from classHandler import *
 from fontHandler import FontHandler
 
-def dist(a,b):
-    return math.sqrt((b[0]-a[0])**2+(b[1]-a[1])**2+(b[2]-a[2])**2)
-
 def constrain(n,f,t):
     if n<f:
         return f
@@ -262,7 +259,7 @@ class Game:
         self.player.xAng = self.inputHandler.mouseX/(self.windowSize[0]/2)*1.57-self.inputHandler.mouseXoffset
         self.player.yAng = constrain(self.inputHandler.mouseY/(self.windowSize[1]/2)*1.57,-math.pi/2,math.pi/2)
         
-        self.player.moveWithKeys(self.inputHandler,self.FPSCounter.deltaTime)
+        self.player.moveWithKeys(self.inputHandler,self.FPSCounter.deltaTime,self.mp.objects)
         if self.player.distanceTraveled - self.player.lastWalkSound > 1.5:
             self.player.lastWalkSound = self.player.distanceTraveled
             self.audioHandler.playSound("res/audio/walksound.wav")
@@ -285,13 +282,13 @@ class Game:
 
         for i in self.mp.objects:
             i.draw(self.shaderHandler,self.renderer,viewMat)
-            if (isinstance(i, PuzzlePlane) or isinstance(i, SlidePlane)) and dist(i.model.pos,self.player.pos)<1 and not i.isInteracting:
+            if (isinstance(i, PuzzlePlane) or isinstance(i, SlidePlane)) and dist(i.model.pos,self.player.pos)<1.5 and not i.isInteracting:
                 popupText = "Press E to interact"
                 if self.inputHandler.isKeyDown(b'e'):
                     i.isInteracting = True
                     self.inputHandler.interactingWith = i
                     self.player.animating = 1.0
-            if (isinstance(i, TeleportCrystal) and dist(i.model.pos,self.player.pos)<1.5 and not i.isInteracting):
+            if (isinstance(i, TeleportCrystal) and dist(i.model.pos,self.player.pos)<1.5 and not i.isInteracting and i.opened):
                 popupText = "Press E to travel"
                 if self.inputHandler.isKeyDown(b'e'):
                     # load menu with animation

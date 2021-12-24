@@ -18,6 +18,10 @@ def lerpVec3(f,t,n):
     return np.array(out)
 
 
+def dist(a,b):
+    return math.sqrt((b[0]-a[0])**2+(b[1]-a[1])**2+(b[2]-a[2])**2)
+
+
 class Map:
     def __init__(self,ph,props):
         self.objFile = props["file"]

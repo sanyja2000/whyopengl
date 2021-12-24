@@ -1,4 +1,5 @@
 import math,pyrr, numpy as np
+from classHandler import PuzzlePlane, SlidePlane, TeleportCrystal, dist
 
 def lerp(f, t, n):
     return f*(1-n)+t*n
@@ -31,17 +32,17 @@ class Player:
         self.distanceTraveled = 0
         self.lastWalkSound = 0
         self.fallSound = False
-    def moveWithKeys(self,inputHandler,deltaTime):
+    def moveWithKeys(self,inputHandler,deltaTime,mapObjects):
         if self.camera.movement == "fixed":
             return
-        keysDown = inputHandler.keysDown
         if not inputHandler.interactingWith is None:
             inputHandler.interactingWith.moveWithKeys(inputHandler,deltaTime)
             return
-        if not self.grounded:
-            return
         self.vel[0] = self.maxVelocity*math.cos(-self.xAng)*deltaTime
         self.vel[2] = self.maxVelocity*math.sin(-self.xAng)*deltaTime
+        
+        self.lastpos = self.pos[:]
+
         cubeW = 9.5
         moved = False
         if inputHandler.isKeyHeldDown(b'd'):
@@ -64,6 +65,11 @@ class Player:
         if moved:
             self.distanceTraveled += self.maxVelocity*deltaTime
         
+        for obj in mapObjects:
+            if (isinstance(obj, PuzzlePlane) or isinstance(obj, SlidePlane) or (isinstance(obj, TeleportCrystal) and obj.opened)) and dist(self.pos,obj.model.pos) < 1:
+                self.pos = self.lastpos
+                break
+
 
         if self.pos[0] > cubeW:
             self.pos[0] = cubeW
