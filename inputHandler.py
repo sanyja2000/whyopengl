@@ -28,10 +28,6 @@ class InputHandler:
             self.mouseX = args[0]*3
             self.mouseY = args[1]*2-self.windowSize[1]/2
     def keyDownHandler(self, *args):
-        if(args[0]==b'\x1b'):
-            glutLeaveMainLoop()
-            #glutDestroyWindow(self.window)
-            sys.quit()
         if args[0]==b'o':
             self.mouseCatched = not self.mouseCatched
             if self.mouseCatched:

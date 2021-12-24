@@ -53,4 +53,5 @@ class AudioHandler:
         stream.close()
     def stopAll(self):
         self.isStopped = [1,1,1,1,1]
+        self.channelVolume = [1,0,0,0,0]
 

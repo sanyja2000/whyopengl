@@ -158,8 +158,26 @@ class Game:
                 c = self.mp.getObject("card"+str(i))
                 i+=1
     def showScreen(self):
+        
         if self.mp.type == "load":
             return
+
+
+        if self.inputHandler.isKeyDown(b'\x1b'):
+            if self.inputHandler.interactingWith == None:
+                # ESC menu
+
+                glutLeaveMainLoop()
+                #glutDestroyWindow(self.window)
+                sys.quit()
+            else:
+                # Exit current puzzle
+                self.inputHandler.interactingWith.isInteracting = False
+                self.inputHandler.interactingWith = None
+                self.player.animating = 1.0
+            
+        
+        
         now = time.perf_counter()
         glutSetWindowTitle("FPS: "+str(self.FPSCounter.FPS)+" delta: "+str(self.FPSCounter.deltaTime)+" seconds: "+str(self.loopCounter))
     
