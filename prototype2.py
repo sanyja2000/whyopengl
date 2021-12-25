@@ -255,15 +255,19 @@ class Game:
             if card != None and hasattr(card,"openTime"):
                 temparr.append([0,-10,0,(now-card.openTime)*70/22])
             mapObj.clearedPoints = np.array(temparr)
+
+
+        """
         if self.inputHandler.isKeyDown(b'm'):
             #startLoadingScreen(self.mp)
             if self.mp.type != "menu":
                 self.audioHandler.stopAll()
                 startLoadingScreen(self.mp,"maps/menu.json",self.player,self.inputHandler)#MapLoader("maps/menu.json",self.player)
                 self.inputHandler.interactingWith = self.mp.getObject("ldscreen")
+        
         if b'l' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'l'] == 1:
             self.mp.getObject("crystal").open()
-
+        """
         self.renderer.Clear()
 
         self.player.xAng = self.inputHandler.mouseX/(self.windowSize[0]/2)*1.57-self.inputHandler.mouseXoffset

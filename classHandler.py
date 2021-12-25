@@ -10,6 +10,10 @@ import pyrr
 import random
 from OpenGL.GLUT import *
 
+def easeInOutSine(x):
+    return -(math.cos(math.pi * x) - 1) / 2
+
+
 def lerp(f, t, n):
     return f*(1-n)+t*n
 
@@ -682,8 +686,9 @@ class PauseMenu:
         self.menuText = ["Resume", "Main Menu", "Quit Game"]
         self.openPercent = 0
         self.moving = 0
-        self.openSpeed = 6
+        self.openSpeed = 3
         self.backToMainMenu = False
+        self.playingSound = None
     def draw(self,fontHandler,renderer):
         self.ownTime += 1
 
@@ -698,16 +703,26 @@ class PauseMenu:
         renderer.Draw(self.va,self.ib,self.shader)
 
         # draw text
-        
-        fontHandler.drawText("Pause Menu",-1*len("Pause Menu")/50+0.7+(1-self.openPercent)*0.66,0.6,0.06,renderer)
+        #easeInOutSine
+        xoffset = easeInOutSine(1-self.openPercent)*0.66
+
+        fontHandler.drawText("Pause Menu",-1*len("Pause Menu")/50+0.7+xoffset,0.6,0.06,renderer)
 
         for i in range(len(self.menuText)):
             text = self.menuText[i]
             if i == self.currentlySelected:
                 text = "> "+text+" <" 
-            fontHandler.drawText(text,-1*len(text)/50+0.7+(1-self.openPercent)*0.66,0.3-i*0.4,0.05,renderer)
+                fontHandler.drawText(text,-1*len(text)/50+0.7+xoffset,0.3-i*0.4+math.sin(self.ownTime/100)/100.0,0.05,renderer)
+            else:
+                fontHandler.drawText(text,-1*len(text)/50+0.7+xoffset,0.3-i*0.4,0.05,renderer)
                         
     def update(self,deltaTime,audioHandler,game):
+        if self.playingSound == "slide":
+            self.playingSound = None
+            audioHandler.playSound("res/audio/menu_slide.wav")
+        if self.playingSound == "move":
+            self.playingSound = None
+            audioHandler.playSound("res/audio/puzzlemove.wav")
         if game.mp.type == "menu":
             self.menuText = ["Resume", "Quit Game"]
         else:
@@ -722,17 +737,24 @@ class PauseMenu:
     def open(self):
         self.currentlySelected = 0
         self.moving = self.openSpeed
+        self.playingSound = "slide"
     def close(self):
         self.moving = -1*self.openSpeed
+        self.playingSound = "slide"
     def moveWithKeys(self,inputHandler,deltaTime):
         if inputHandler.isKeyDown(b's'):
+            # Menu down
+            self.playingSound = "move"
             self.currentlySelected = (self.currentlySelected+1)%len(self.menuText)
         if inputHandler.isKeyDown(b'w'):
+            # Menu up
+            self.playingSound = "move"
             self.currentlySelected = (self.currentlySelected-1)%len(self.menuText)
         if inputHandler.isKeyDown(b'\r') or inputHandler.isKeyDown(b' '):
             if self.menuText[self.currentlySelected] == "Resume":
                 # Resume
                 self.close()
+                inputHandler.interactingWith = None
             elif self.menuText[self.currentlySelected] == "Main Menu":
                 # Load main menu
                 self.close()
