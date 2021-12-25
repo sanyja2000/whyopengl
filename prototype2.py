@@ -147,13 +147,16 @@ class Game:
             # Volume up
             if self.audioHandler.masterVolume<1:
                 self.audioHandler.masterVolume += 0.1
-            
+                if self.audioHandler.masterVolume>1:
+                    self.audioHandler.masterVolume = 1 
 
         elif args[0] == 4:
             # Scroll down
             # Volume down
             if self.audioHandler.masterVolume>0:
                 self.audioHandler.masterVolume -= 0.1
+                if self.audioHandler.masterVolume<0:
+                   self.audioHandler.masterVolume = 0 
 
         elif self.mp.type == "menu":
             cards = []
@@ -173,10 +176,17 @@ class Game:
 
 
         if self.inputHandler.isKeyDown(b'\x1b'):
-            if self.pauseMenu.openPercent == 1:
+            # Check ESC key
+            if not self.inputHandler.interactingWith is None and not isinstance(self.inputHandler.interactingWith, PauseMenu):
+                self.inputHandler.interactingWith.isInteracting = False
+                self.player.animating = 1.0
+                self.inputHandler.interactingWith = None
+            elif self.pauseMenu.openPercent == 1:
+                # Close pause menu
                 self.pauseMenu.close()
                 self.inputHandler.interactingWith = None
-            if self.pauseMenu.openPercent == 0:
+            elif self.pauseMenu.openPercent == 0:
+                # Open pause menu
                 self.pauseMenu.open()
                 self.inputHandler.interactingWith = self.pauseMenu
             """

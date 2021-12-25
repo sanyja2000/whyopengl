@@ -3,7 +3,7 @@
     {"name":"camf","type":"camera","pos":[0,0,-5],"rot":[0,0,0],"movement":"free"},
     {"name":"pp1","puzzleId":"01","type":"puzzlePlane","pos":[-5,0.25,-5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/puzzles/sokoban3.txt"},
     {"name":"pp2","puzzleId":"01","type":"puzzlePlane","pos":[5,0.25,-5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/puzzles/sokoban4.txt"},
-    {"name":"pp3","puzzleId":"01","type":"puzzlePlane","pos":[-5,0.25,5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/puzzles/sokoban1.txt"},
+    {"name":"pp3","puzzleId":"01","type":"puzzlePlane","pos":[-5,0.25,5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/puzzles/sokoban7.txt"},
     {"name":"pp4","puzzleId":"01","type":"slidePlane","pos":[5,0.25,5],"rot":[0,-1.57,0],"scale":0.25,"picture":"res/puzzles/bl.png"},
     {"name":"crystal","type":"teleportCrystal","picture":"res/cards/blindingLights.png","pos":[0,-1,0],"rot":[0,0,0],"scale":0.25,"beatLength":11.22,"beats":["res/audio/blindinglights_drum.wav","res/audio/blindinglights_bass.wav","res/audio/blindinglights_chords.wav","res/audio/blindinglights_melody.wav"]}
     ]}
