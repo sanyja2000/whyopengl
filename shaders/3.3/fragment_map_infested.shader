@@ -74,7 +74,7 @@ void main(){
 
     
     
-    for(int i=0;i<numPoints;i++){
+    for(int i=10;i<numPoints;i++){
         //vec3 clearedPoint = vec3(-5,-10.0,-5)/10.0;
         vec4 clearedPoint = clearedPoints[i]/10.0;
 
