@@ -13,6 +13,8 @@ class AudioHandler:
         self.channelVolume = [1,0,0,0,0]
         self.isStopped = [0,0,0,0,0]
 
+        self.maxVolume = 0
+
         self.currentlyPlaying = {}
         #self.stream.start_stream()
     def isStillPlaying(self,filename):
@@ -43,14 +45,19 @@ class AudioHandler:
             if self.isStopped[volumeIndex]:
                 break
             buf = np.frombuffer(data,dtype=np.int16)*self.channelVolume[volumeIndex]*self.masterVolume
+            # Pause menu animation?
+            # print([abs(i) for i in buf[:len(buf)//2]])
+            # self.maxVolume += sum([abs(i) for i in buf[:len(buf)//2]])
             outdata = buf.astype(np.int16).tostring()
             stream.write(outdata)
             data = wf.readframes(1024)
             #i=(i+0.01)%1
-        self.currentlyPlaying[filename] = False  
+        self.currentlyPlaying[filename] = False 
         stream.stop_stream()
         stream.close()
     def stopAll(self):
         self.isStopped = [1,1,1,1,1]
         self.channelVolume = [1,0,0,0,0]
+    def update(self):
+        self.maxVolume = 0
 

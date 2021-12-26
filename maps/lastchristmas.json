@@ -1,5 +1,5 @@
 {"type":"playable","objectList":[
-{"name":"Map1","type":"mapObject","cardNum":4,"file":"res/roomtest.obj","texture":"res/wall_top.png","pos":[0,10,0],"rot":[0,0,0]},
+{"name":"Map1","type":"mapObject","cardNum":4,"file":"res/room2.obj","texture":"res/wall_top.png","pos":[0,10,0],"rot":[0,0,0]},
 {"name":"camf","type":"camera","pos":[0,0,-5],"rot":[0,0,0],"movement":"free"},
 {"name":"pp1","puzzleId":"01","type":"puzzlePlane","pos":[-5,0.25,-5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/puzzles/sokoban10.txt"},
 {"name":"pp2","puzzleId":"01","type":"puzzlePlane","pos":[5,0.25,5],"rot":[0,-1.57,0],"scale":0.25,"mapfile":"res/puzzles/sokoban0.txt"},

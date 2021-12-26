@@ -209,8 +209,10 @@ class Game:
 
 
         now = time.perf_counter()
-        glutSetWindowTitle("FPS: "+str(self.FPSCounter.FPS)+" delta: "+str(self.FPSCounter.deltaTime)+" seconds: "+str(self.loopCounter))
+        glutSetWindowTitle("FPS: "+str(self.FPSCounter.FPS)+" delta: "+str(round(self.FPSCounter.deltaTime,3))+" audio: "+str(self.audioHandler.maxVolume))
     
+        self.audioHandler.update()
+
         self.loopCounter += self.FPSCounter.deltaTime
 
         card = self.mp.getObject("crystal")
@@ -258,10 +260,12 @@ class Game:
         mapObj = self.mp.getObject("Map1")
         if mapObj:
             temparr = []
+            """
             for x in self.mp.objects:
                 if isinstance(x, PuzzlePlane) and x.solved:
                     temparr.append([x.model.pos[0],x.model.pos[1]-10.25,x.model.pos[2],2+math.sin(now/2.0)/3.0])
             #mapObj.clearedPoints = np.array([[-5,-10.0,-5,2+math.sin(now/2.0)/3.0],[5,-10.0,-5,2+math.sin(now/2.0)/3.0]])
+            """
             if card != None and hasattr(card,"openTime"):
                 temparr.append([0,-10,0,(now-card.openTime)*70/22])
             mapObj.clearedPoints = np.array(temparr)
@@ -351,6 +355,7 @@ class Game:
         self.pauseMenu.update(self.FPSCounter.deltaTime,self.audioHandler,self)
 
         glutSwapBuffers()
+        
         self.inputHandler.updateKeysDown()
         #self.audioHandler.update()
         self.FPSCounter.drawFrame(now)

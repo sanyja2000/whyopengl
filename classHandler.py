@@ -4,7 +4,6 @@ from objectHandler import Object3D
 from renderer import IndexBuffer, Texture, VertexArray, VertexBuffer, VertexBufferLayout
 import numpy as np
 import time
-from puzzles import *
 from PIL import Image
 import pyrr
 import random
