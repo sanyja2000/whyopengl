@@ -196,7 +196,7 @@ class Game:
 
 
         now = time.perf_counter()
-        glutSetWindowTitle("FPS: "+str(self.FPSCounter.FPS)+" delta: "+str(round(self.FPSCounter.deltaTime,3)))
+        glutSetWindowTitle("WhyOpenGL - FPS: "+str(self.FPSCounter.FPS))
     
         self.audioHandler.update()
 

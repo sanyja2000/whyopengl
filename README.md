@@ -1,5 +1,8 @@
-# whyopengl - a basic opengl based game engine
-A simple opengl project created in python.
+# whyopengl - a basic opengl based game engine and demo game
+A simple opengl university project created in python.
+
+It contains a very basic 3D rendering engine and an FPS puzzle game created with the engine.
+In the game you have to solve puzzle to unlock the music for the played level. Puzzles include sokoban and sliding image pieces.
 
 # Installation
 
@@ -40,5 +43,6 @@ Once you have downloaded the files for your respective python version, you have 
 Now you should be able to run the project.
 
 ### To run the project
-For now, start 
-```python prototype2.py```
+Type 
+```python main.py```
+when in the main folder of the project.
