@@ -6,7 +6,7 @@ from ctypes import c_void_p, pointer, sizeof, c_float
 import numpy as np
 import sys
 import time, math
-from renderer import VertexBuffer, IndexBuffer, VertexArray, VertexBufferLayout, Shader, Renderer, Texture, Camera
+from engine.renderer import VertexBuffer, IndexBuffer, VertexArray, VertexBufferLayout, Shader, Renderer, Texture, Camera
 import pyrr
 
 vshader = """

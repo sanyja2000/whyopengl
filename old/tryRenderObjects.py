@@ -6,12 +6,14 @@ from ctypes import c_void_p, pointer, sizeof, c_float
 import numpy as np
 import sys, math
 import time
-from renderer import VertexBuffer, IndexBuffer, VertexArray, VertexBufferLayout, Shader, Renderer, Texture, Camera, FPSCounter
+
+from engine.renderer import VertexBuffer, IndexBuffer, VertexArray, VertexBufferLayout, Shader, Renderer, Texture, Camera, FPSCounter
 from plane import *
-from objloader import processObjFile
-from objectHandler import Object3D
+from engine.objloader import processObjFile
+from engine.objectHandler import Object3D
 import pyrr
 import random
+from engine.fontHandler import FontHandler
 
 vshader = """
 #version 330 core
@@ -32,7 +34,6 @@ void main()
     v_position = position.xyz;
     
 }"""
-
 
 
 fshader = """
@@ -112,8 +113,8 @@ class Game:
         self.shader = Shader(vshader, fshader)
 
         self.models = []
-        self.gunModelPrefab = Object3D("res/GunTri.obj","res/Gun.png")
-        self.mapModel = Object3D("res/map1.obj","res/map1.png")
+        self.gunModelPrefab = Object3D("res/card.obj","res/cardLayout.png")
+        self.mapModel = Object3D("res/roomtest.obj","res/boxWall.png")
         self.mapModel.SetPosition(np.array([0,-1,0]))
         self.n = 20
         for i in range(self.n):
@@ -124,7 +125,7 @@ class Game:
         for i in range(self.n):
             self.models[i].SetPosition(np.array([random.randint(-50,50),0,random.randint(-50,50)]))
         
-        self.bulletModelPrefab = Object3D("res/bullet1.obj","res/bullet1.png")
+        self.bulletModelPrefab = Object3D("res/notesmall.obj","res/crystal.png")
         self.bulletModels = []
         #self.bulletModel = Object3D("res/bullet1.obj","res/bullet1.png")
         
@@ -134,7 +135,7 @@ class Game:
         self.proj = pyrr.matrix44.create_perspective_projection(45.0, self.windowSize[0]/self.windowSize[1], 1.0, 10.0)
         #self.proj = pyrr.matrix44.create_perspective_projection_from_bounds(-20, 20, -15, 15, -10, 10)
         #self.proj = pyrr.matrix44.create_orthogonal_projection(-20, 20, -15, 15, -100, 100)
-        
+
 
         print("Error: ")
         print(glGetProgramInfoLog(self.shader.RendererId))
@@ -155,7 +156,7 @@ class Game:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0)
         glBindVertexArray(0)
 
-        self.tp = TexturePlane("res/Pebbles.png")
+        self.tp = TexturePlane("res/sandstoneTexture.png")
 
         self.x = 0
         self.vx = 0
@@ -166,6 +167,8 @@ class Game:
         self.renderer = Renderer()
 
         self.FPSCounter = FPSCounter()
+
+        #self.FH = FontHandler()
         
         glutMainLoop()
     def errorMsg(self, *args):
@@ -269,13 +272,17 @@ class Game:
             #self.models[i].SetRotation(np.array([0,self.a*10+self.models[i].pos[0],0]))
             self.models[i].DrawWithShader(self.shader,self.renderer,np.matmul(self.proj,self.camModel))
 
-        print(len(self.models))
+        #print(len(self.models))
+
         
         self.tp.SetPosition(np.array([0,-1,-2]))
         self.tp.SetRotation(np.array([1.57,0,0]))
         self.tp.DrawWithShader(self.shader,self.renderer,np.matmul(self.proj,self.camModel))
 
         self.mapModel.DrawWithShader(self.shader,self.renderer,np.matmul(self.proj,self.camModel))
+
+        #self.FH.drawText(str(self.FPSCounter.FPS),0,0,0.1,self.renderer)
+        
 
         """
         #self.tp2.SetPosition(np.array([0,math.sin(self.a+math.pi),math.cos(self.a+math.pi)]))

@@ -5,19 +5,19 @@ from ctypes import c_void_p, pointer, sizeof, c_float
 import numpy as np
 import sys, math
 import time
-from renderer import VertexBuffer, IndexBuffer, VertexArray, VertexBufferLayout, Shader, Renderer, Texture, Camera, FPSCounter, ShaderHandler
+from engine.renderer import VertexBuffer, IndexBuffer, VertexArray, VertexBufferLayout, Shader, Renderer, Texture, Camera, FPSCounter, ShaderHandler
 from inputHandler import InputHandler
 from playerController import Player
 from audioHandler import AudioHandler
 from plane import *
-from objloader import processObjFile
-from objectHandler import Object3D
+from engine.objloader import processObjFile
+from engine.objectHandler import Object3D
 import pyrr
 import random
 from threading import Thread
 from mapLoader import MapLoader
 from classHandler import *
-from fontHandler import FontHandler
+from engine.fontHandler import FontHandler
 
 def dist(a,b):
     return math.sqrt((b[0]-a[0])**2+(b[1]-a[1])**2+(b[2]-a[2])**2)

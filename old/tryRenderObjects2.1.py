@@ -6,10 +6,10 @@ from ctypes import c_void_p, pointer, sizeof, c_float
 import numpy as np
 import sys, math
 import time
-from renderer import VertexBuffer, IndexBuffer, VertexArray, VertexBufferLayout, Shader, Renderer, Texture, Camera
+from engine.renderer import VertexBuffer, IndexBuffer, VertexArray, VertexBufferLayout, Shader, Renderer, Texture, Camera
 from plane import *
-from objloader import processObjFile
-from objectHandler import Object3D
+from engine.objloader import processObjFile
+from engine.objectHandler import Object3D
 import pyrr
 import random
 
