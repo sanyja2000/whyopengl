@@ -1,7 +1,7 @@
 import math
 from typing import Text
-from objectHandler import Object3D
-from renderer import IndexBuffer, Texture, VertexArray, VertexBuffer, VertexBufferLayout
+from engine.objectHandler import Object3D
+from engine.renderer import IndexBuffer, Texture, VertexArray, VertexBuffer, VertexBufferLayout
 import numpy as np
 import time
 from PIL import Image

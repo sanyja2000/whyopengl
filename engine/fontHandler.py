@@ -1,6 +1,6 @@
 from OpenGL.GL import *
 from PIL import Image, ImageFont, ImageDraw
-from renderer import Shader,VertexArray, VertexBuffer, IndexBuffer, VertexBufferLayout
+from engine.renderer import Shader,VertexArray, VertexBuffer, IndexBuffer, VertexBufferLayout
 import numpy as np
 from ctypes import sizeof, c_float
 

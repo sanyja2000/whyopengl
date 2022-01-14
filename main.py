@@ -5,19 +5,18 @@ from ctypes import c_void_p, pointer, sizeof, c_float
 import numpy as np
 import sys, math
 import time
-from renderer import VertexBuffer, IndexBuffer, VertexArray, VertexBufferLayout, Shader, Renderer, Texture, Camera, FPSCounter, ShaderHandler
+from engine.renderer import VertexBuffer, IndexBuffer, VertexArray, VertexBufferLayout, Shader, Renderer, Texture, Camera, FPSCounter, ShaderHandler
 from inputHandler import InputHandler
 from playerController import Player
-from audioHandler import AudioHandler
-from plane import *
-from objloader import processObjFile
-from objectHandler import Object3D
+from engine.audioHandler import AudioHandler
+from engine.objloader import processObjFile
+from engine.objectHandler import Object3D
 import pyrr
 import random
 from threading import Thread
 from mapLoader import MapLoader, startLoadingScreen
 from classHandler import *
-from fontHandler import FontHandler
+from engine.fontHandler import FontHandler
 
 def constrain(n,f,t):
     if n<f:
@@ -189,19 +188,7 @@ class Game:
                 # Open pause menu
                 self.pauseMenu.open()
                 self.inputHandler.interactingWith = self.pauseMenu
-            """
-            if self.inputHandler.interactingWith == None:
-                # ESC menu
 
-                glutLeaveMainLoop()
-                #glutDestroyWindow(self.window)
-                sys.quit()
-            else:
-                # Exit current puzzle
-                self.inputHandler.interactingWith.isInteracting = False
-                self.inputHandler.interactingWith = None
-                self.player.animating = 1.0
-            """
         
         if self.pauseMenu.backToMainMenu:
             self.pauseMenu.backToMainMenu = False
@@ -209,7 +196,7 @@ class Game:
 
 
         now = time.perf_counter()
-        glutSetWindowTitle("FPS: "+str(self.FPSCounter.FPS)+" delta: "+str(round(self.FPSCounter.deltaTime,3))+" audio: "+str(self.audioHandler.maxVolume))
+        glutSetWindowTitle("FPS: "+str(self.FPSCounter.FPS)+" delta: "+str(round(self.FPSCounter.deltaTime,3)))
     
         self.audioHandler.update()
 
@@ -260,28 +247,13 @@ class Game:
         mapObj = self.mp.getObject("Map1")
         if mapObj:
             temparr = []
-            """
-            for x in self.mp.objects:
-                if isinstance(x, PuzzlePlane) and x.solved:
-                    temparr.append([x.model.pos[0],x.model.pos[1]-10.25,x.model.pos[2],2+math.sin(now/2.0)/3.0])
-            #mapObj.clearedPoints = np.array([[-5,-10.0,-5,2+math.sin(now/2.0)/3.0],[5,-10.0,-5,2+math.sin(now/2.0)/3.0]])
-            """
+
             if card != None and hasattr(card,"openTime"):
                 temparr.append([0,-10,0,(now-card.openTime)*70/22])
             mapObj.clearedPoints = np.array(temparr)
 
 
-        """
-        if self.inputHandler.isKeyDown(b'm'):
-            #startLoadingScreen(self.mp)
-            if self.mp.type != "menu":
-                self.audioHandler.stopAll()
-                startLoadingScreen(self.mp,"maps/menu.json",self.player,self.inputHandler)#MapLoader("maps/menu.json",self.player)
-                self.inputHandler.interactingWith = self.mp.getObject("ldscreen")
-        
-        if b'l' in self.inputHandler.keysDown and self.inputHandler.keysDown[b'l'] == 1:
-            self.mp.getObject("crystal").open()
-        """
+
         self.renderer.Clear()
 
         self.player.xAng = self.inputHandler.mouseX/(self.windowSize[0]/2)*1.57-self.inputHandler.mouseXoffset
@@ -345,7 +317,7 @@ class Game:
         if solvedPuzzles == puzzleCount:
             if not card.opened and playingSound == 0:
                 card.openTime = now
-                #self.audioHandler.playSound(card.sound)
+                
                 card.open()
         
         self.fontHandler.drawText(popupText,-1*len(popupText)/50,-0.6,0.05,self.renderer)
@@ -357,7 +329,7 @@ class Game:
         glutSwapBuffers()
         
         self.inputHandler.updateKeysDown()
-        #self.audioHandler.update()
+        
         self.FPSCounter.drawFrame(now)
 
 g = Game()

@@ -1,6 +1,6 @@
 import numpy as np
-from objloader import processObjFile
-from renderer import *
+from .objloader import processObjFile
+from .renderer import *
 import pyrr
 
 class Object3D:

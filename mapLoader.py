@@ -1,7 +1,7 @@
 import numpy as np
 import json
 from classHandler import *
-from objectHandler import prefabHandler
+from engine.objectHandler import prefabHandler
 from functools import partial
 
 class MapLoader:
