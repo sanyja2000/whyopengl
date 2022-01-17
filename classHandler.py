@@ -9,6 +9,15 @@ import pyrr
 import random
 from OpenGL.GLUT import *
 
+"""
+This file contains the classes for different types of objects in the map files.
+Classes are required to have a draw function and optionally an update and moveWithKeys function.
+
+
+"""
+
+
+
 def easeInOutSine(x):
     return -(math.cos(math.pi * x) - 1) / 2
 
@@ -49,59 +58,13 @@ class Map:
                 points.append(self.maxPoints[x])
         parameters = {"u_Time":time.perf_counter(),"4fv,clearedPoints":np.array(points),"numPoints":len(self.clearedPoints)}
         self.model.DrawWithShader(shaderhandler.getShader("map"),renderer,viewMat,options=parameters)
-        #self.model.DrawWithShader(shaderhandler.getShader("default"),renderer,viewMat)
-
-
-class Door:
-    def __init__(self,ph,props):
-        #pos,rot,scale,puzzleId
-        self.puzzleId = props["puzzleId"]
-        self.name = props["name"]
-        self.scale = props["scale"]
-        self.sound = props["sound"]
-        self.opened = False
-        self.openPercent = 0
-        self.leftModel = ph.loadFile("res/trapdoor2.obj","res/wall_top.png",textureRepeat=True)
-        self.leftModel.defaultPos = np.array(props["pos"])
-        self.leftModel.SetPosition(self.leftModel.defaultPos)
-        self.leftModel.SetRotation(np.array([0,3.14,0]))
-        self.leftModel.SetScale(props["scale"])
-        self.rightModel = ph.loadFile("res/trapdoor2.obj","res/wall_top.png",textureRepeat=True)
-        self.rightModel.defaultPos = np.array(props["pos"])
-        self.rightModel.SetPosition(self.rightModel.defaultPos+np.array([0,0,0]))
-        self.rightModel.SetRotation(np.array(props["rot"]))
-        self.rightModel.SetScale(props["scale"])
-    def draw(self,shaderhandler,renderer,viewMat):
-        self.leftModel.DrawWithShader(shaderhandler.getShader("default"),renderer,viewMat)
-        self.rightModel.DrawWithShader(shaderhandler.getShader("default"),renderer,viewMat)
-    def open(self):
-        if not self.opened:
-            #self.leftModel.SetPosition(self.leftModel.defaultPos+np.array([0.99*self.scale,0,0]))
-            #self.rightModel.SetPosition(self.rightModel.defaultPos+np.array([-0.99*self.scale,0,0]))
-            self.opened = True
-    def close(self):
-        if self.opened:
-            #self.leftModel.SetPosition(self.leftModel.defaultPos)
-            #self.rightModel.SetPosition(self.rightModel.defaultPos)
-            self.opened = False
-    def update(self,deltaTime,audioHandler):
-        if self.opened and self.openPercent<1:
-            self.openPercent += 1*deltaTime
-            if self.openPercent > 1:
-                self.openPercent = 1
-        if not self.opened and self.openPercent>0:
-            self.openPercent -= 1*deltaTime
-            if self.openPercent < 0:
-                self.openPercent = 0
-        self.leftModel.SetPosition(self.leftModel.defaultPos+np.array([0.99*self.scale*self.openPercent,0,0]))
-        self.rightModel.SetPosition(self.rightModel.defaultPos+np.array([-0.99*self.scale*self.openPercent,0,0]))
 
 
 class TeleportCrystal:
     def __init__(self,ph,props):
+        """This object appears at the end of a completed map, and if interacted with, loads the main menu."""
         self.name = props["name"]
         self.picture = props["picture"]
-        #self.model = ph.loadFile("res/crystal.obj","res/crystal.png")
         self.model = ph.loadFile("res/card.obj",self.picture)
         self.beats = props["beats"]
         self.scale = props["scale"]
@@ -148,6 +111,7 @@ class TeleportCrystal:
 
 class Decoration:
     def __init__(self,ph,props):
+        """Basic wrapper for decoration objects. These don't interact with anything."""
         self.name = props["name"]
         self.model = ph.loadFile(props["file"],props["texture"])
         self.model.SetScale(props["scale"])
@@ -205,6 +169,7 @@ class PuzzleBox:
 
 class PuzzlePlane:
     def __init__(self,ph,props):
+        """This is the sokoban puzzle. It uses the puzzlebox class for it's child gameobjects."""
         self.prefabHandler = ph
         self.interactText = "Press Q to leave - Press R to restart puzzle"
         self.puzzleId = props["puzzleId"]
@@ -279,7 +244,7 @@ class PuzzlePlane:
                 elif(self.mapfile[y][x] == "p"):
                     yline.append(PuzzleBox("p",ph.loadFile("res/simpleBox.obj","res/boxPlayer.png"),self.dimensions-x,self.dimensions-y,self.boxScale,self.model,self.dimensions,self.rotationOffset))
                 elif(self.mapfile[y][x] == "g"):
-                    yline.append(PuzzleBox("g",ph.loadFile("res/simpleBox.obj","res/boxNoteGFinish.png"),self.dimensions-x,self.dimensions-y,self.boxScale,self.model,self.dimensions,self.rotationOffset))
+                    yline.append(PuzzleBox("g",ph.loadFile("res/simpleBox.obj","res/boxNoteFinish.png"),self.dimensions-x,self.dimensions-y,self.boxScale,self.model,self.dimensions,self.rotationOffset))
                     self.solvedPositions.append([x,y])
                 elif(self.mapfile[y][x] == "s"):
                     yline.append(PuzzleBox("G",ph.loadFile("res/simpleBox.obj","res/boxNoteCorrect.png"),self.dimensions-x,self.dimensions-y,self.boxScale,self.model,self.dimensions,self.rotationOffset))
@@ -338,7 +303,7 @@ class PuzzlePlane:
             if canMove:
                 self.minigameModels[self.dimensions-player.y][self.dimensions-player.x] = None
                 if [self.dimensions-player.x,self.dimensions-player.y] in self.solvedPositions:
-                    self.minigameModels[self.dimensions-player.y][self.dimensions-player.x] = PuzzleBox("g",ph.loadFile("res/simpleBox.obj","res/boxNoteGFinish.png"),player.x,player.y,self.boxScale,self.model,self.dimensions,self.rotationOffset)
+                    self.minigameModels[self.dimensions-player.y][self.dimensions-player.x] = PuzzleBox("g",ph.loadFile("res/simpleBox.obj","res/boxNoteFinish.png"),player.x,player.y,self.boxScale,self.model,self.dimensions,self.rotationOffset)
                 player.moveTo(newPos[0],newPos[1])
                 self.minigameModels[self.dimensions-newPos[1]][self.dimensions-newPos[0]] = player
                 self.justMoved = True
@@ -387,6 +352,7 @@ class SlidePiece:
 
 class SlidePlane:
     def __init__(self,ph,props):
+        """This is the image sliding puzzle. Uses SlidePiece for child gameobjects."""
         self.name = props["name"]
         self.pos = props["pos"]
         self.rot = props["rot"]
@@ -517,7 +483,7 @@ class SlidePlane:
                     continue
                 left = (x)*width/self.size[0]
                 right = (x+1)*width/self.size[0]
-                yline.append(SlidePiece(str(x)+","+str(y),ph.loadFile("res/slidebox.obj","res/puzzles/photo1.png",unique=True),self.size[0]-x,self.size[1]-y,self.boxScale,self.model,3,self.rotationOffset))
+                yline.append(SlidePiece(str(x)+","+str(y),ph.loadFile("res/slidebox.obj","res/1px.png",unique=True),self.size[0]-x,self.size[1]-y,self.boxScale,self.model,3,self.rotationOffset))
                 yline[-1].model.texture.OverrideTexture(im.crop((left, top, right, bottom)),repeat=True)
 
             self.minigameModels.append(yline)
@@ -529,12 +495,13 @@ class SlidePlane:
 
 class ShaderPlane:
     def __init__(self,ph,props):
+        """Used for menu background"""
         self.name = props["name"]
         self.pos = props["pos"]
         self.rot = props["rot"]
         self.scl = props["scale"]
         self.shaderName = props["shader"]
-        self.model = ph.loadFile("res/simplePlane.obj","res/puzzleHolderTestSuccess.png")
+        self.model = ph.loadFile("res/simplePlane.obj","res/1px.png")
         self.model.SetScale(props["scale"])
         self.model.SetPosition(np.array(props["pos"]))
         self.model.SetRotation(np.array(props["rot"]))
@@ -545,7 +512,9 @@ class ShaderPlane:
 
 class Camera:
     def __init__(self,props):
-        #{"name":"camera1","type":"camera","movement":"fixed","pos":[0,1,0],"rot":[0,0,0]}
+        """Basic camera wrapper
+            syntax: {"name":"camera1","type":"camera","movement":"fixed","pos":[0,1,0],"rot":[0,0,0]}
+        """
         self.name = props["name"]
         self.pos = props["pos"]
         self.rot = props["rot"]
@@ -558,18 +527,11 @@ class Camera:
     def draw(self,shaderhandler,renderer,viewMat):
         pass
     def update(self,deltaTime,audioHandler):
-        """
-        a = self.rot[1] #yMouseAngle
-        b = self.rot[0] #xMouseAngle
-        rotz = pyrr.matrix44.create_from_z_rotation(a*math.sin(b))
-        rotx = pyrr.matrix44.create_from_x_rotation(a*math.cos(b))
-        rot = np.matmul(np.matmul(pyrr.matrix44.create_from_y_rotation(b),rotz),rotx)
-        self.camModel = np.matmul(rot,np.transpose(pyrr.matrix44.create_from_translation(np.array(self.camPosition))))
-        """
         pass
         
 class MenuCard:
     def __init__(self,ph,props):
+        """Card for levels in menu"""
         self.name = props["name"]
         if props["revealed"]:
             self.model = ph.loadFile("res/card.obj",props["picture"])
@@ -615,6 +577,8 @@ class MenuCard:
 
 class LoadingScreen:
     def __init__(self,ph,props):
+        """Loading screen between menu and level, added once for both maps."""
+        # TODO: move it into HUD
         self.name = props["name"]
         self.model = ph.loadFile("res/simplePlane.obj","res/black.png")#props["picture"])
         self.model.SetScale(props["scale"])
@@ -632,7 +596,6 @@ class LoadingScreen:
         self.function = props["function"] if "function" in props else None
 
     def draw(self,shaderhandler,renderer,viewMat):
-        #self.model.DrawWithShader(shaderhandler.getShader("default"),renderer,viewMat)
         if self.isActive:
             self.model.DrawWithShader(shaderhandler.getShader("default"),renderer,viewMat)
     def update(self,deltaTime,audioHandler):
@@ -653,7 +616,6 @@ class LoadingScreen:
                     self.done = True
                     self.animationTime = 1
             if self.done and self.function != None:
-                print("function ran")
                 self.function()
                 self.isActive = False
                 self.done = False
@@ -665,6 +627,7 @@ class LoadingScreen:
 
 class PauseMenu:
     def __init__(self, hudShader):
+        """ESC menu. Not part of a map, initialized with the game."""
         self.backgroundTexture = Texture("res/pauseMenu.png")
         self.points = np.array([0.33, -1, 0.0, 0.0,
                                 1, -1, 1.0, 0.0,

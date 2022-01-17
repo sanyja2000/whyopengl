@@ -6,7 +6,8 @@ from functools import partial
 
 class MapLoader:
     def __init__(self,filename,player,unlockedCards=0):
-        print("loading map:"+filename)
+        """This class holds all of the map information and objects."""
+        print("LOG: Loading mapfile: "+filename)
         self.mapFile = ""
         self.objects = []
         self.prefabHandler = prefabHandler()
@@ -19,8 +20,6 @@ class MapLoader:
             for obj in self.JSONContent["objectList"]:
                 if obj["type"]=="mapObject":
                     self.objects.append(Map(self.prefabHandler,obj))
-                elif obj["type"]=="door":
-                    self.objects.append(Door(self.prefabHandler,obj))
                 elif obj["type"]=="decoration":
                     self.objects.append(Decoration(self.prefabHandler,obj))
                 elif obj["type"]=="puzzlePlane":
@@ -38,9 +37,7 @@ class MapLoader:
                     if obj["name"] == "card3" and unlockedCards & 4 == 4:
                         obj["revealed"] = True
                     self.objects.append(MenuCard(self.prefabHandler,obj))  
-
                 elif obj["type"]=="camera":
-                    #self.objects.append(Camera(self.prefabHandler,obj))
                     player.camera = Camera(obj)
                     player.pos = player.camera.pos
                 elif obj["type"]=="shaderPlane":
@@ -48,11 +45,12 @@ class MapLoader:
                 elif obj["type"]=="comment":
                     pass
                 else:
-                    print("Unknown type for object in json: "+obj["type"])
+                    print("ERROR: Unknown type for object in json: "+obj["type"])
                     print(obj)
     def loadNewMap(self,filename,player):
         self.__init__(filename,player)
     def getObject(self,objName):
+        """Returns an object with name:"objName". If it doesn't exist returns None."""
         for o in self.objects:
             if o.name == objName:
                 return o
@@ -61,12 +59,8 @@ class MapLoader:
 
 
 def startLoadingScreen(maploader,map,player,inputhandler):
-    print("added loadingscreen")
-    
     func = partial(loadMapAsync,maploader,map,player,inputhandler)
-    
     maploader.objects.append(LoadingScreen(maploader.prefabHandler,{"name":"ldscreen","pos":[-0.2,0,0],"rot":[0,0,1.57],"scale":1.5,"animation":"grow","function":func}))
-    
     # stop mouse
     inputhandler.mouseLocked = True
 

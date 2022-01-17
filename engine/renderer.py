@@ -50,7 +50,7 @@ class VertexArray:
         for i in range(len(elements)):
             element = elements[i]
             glEnableVertexAttribArray(i)
-            glVertexAttribPointer(i, element[1], element[0], element[2], layout.Stride, c_void_p(offset)) # WTF?!? 'None' should be 'offset'
+            glVertexAttribPointer(i, element[1], element[0], element[2], layout.Stride, c_void_p(offset))
             offset += element[1]*GetSizeOfType(element[0])
             
     def Bind(self):
@@ -191,14 +191,6 @@ class Renderer:
         if drawUntil == None:
             drawUntil = indbuf.Count
         glDrawElements(GL_TRIANGLES, drawUntil, GL_UNSIGNED_INT, None)
-        
-class Camera:
-    def __init__(self):
-        pass
-    def Perspective(self, bottom, top, left, right, near, far):
-        mat = np.matrix([[2*near/(right-left), 0, 0, 0],[0, 2*near/(top-bottom),0,0], [(right+left)/(right-left), (top+bottom)/(top-bottom), -1*(far+near)/(far-near), -1], [0,0,-1*(2*far*near)/(far-near),0]])
-        #mat = np.matrix([[2*near/(right-left),0,0,0],[0,2*near/(top-bottom),0,0],[(right+left)/(right-left),(top+bottom)/(top-bottom),-1*(far+near)/(far-near),-1],[0,0,-1*(2*far*near)/(far-near),0]])
-        return mat
 
 class FPSCounter:
     def __init__(self):

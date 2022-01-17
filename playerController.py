@@ -96,26 +96,18 @@ class Player:
             self.lastInteractedWith = inputHandler.interactingWith
             a = lerp(self.yAng,0.7853,(1-self.animating))
             b = lerp(self.xAng%6.28,3.1415,(1-self.animating))
-            #a = 0.7853
-            #b = 3.1415
-            #self.camPosition = -1*inputHandler.interactingWith.model.pos+np.array([0,-0.35,0.3])
+
             self.camPosition = lerpVec3([-self.pos[0],-self.pos[1]-1,-self.pos[2]],-1*inputHandler.interactingWith.model.pos+np.array([0,-0.35,0.3]),(1-self.animating))
         else:
             a = lerp(0.7853,self.yAng,(1-self.animating))
             b = lerp(3.1415,self.xAng%6.28,(1-self.animating))
-            #a = self.yAng
-            #b = self.xAng
+
         
             if self.lastInteractedWith is not None:
                 self.camPosition = lerpVec3(-1*self.lastInteractedWith.model.pos+np.array([0,-0.35,0.3]),[-self.pos[0],-self.pos[1]-1+math.sin(self.distanceTraveled*2*2)*0.02,-self.pos[2]],(1-self.animating))
             else:
                 self.camPosition = [-self.pos[0],-self.pos[1]-1+math.sin(self.distanceTraveled*2*2)*0.02,-self.pos[2]]
-            #
-            """
-            rotz = pyrr.matrix44.create_from_z_rotation(self.yAng*math.sin(self.xAng))
-            rotx = pyrr.matrix44.create_from_x_rotation(self.yAng*math.cos(self.xAng))
-            rot = np.matmul(np.matmul(pyrr.matrix44.create_from_y_rotation(self.xAng),rotz),rotx)
-            """
+
         if self.camera.movement == "free":
             rotz = pyrr.matrix44.create_from_z_rotation(a*math.sin(b))
             rotx = pyrr.matrix44.create_from_x_rotation(a*math.cos(b))
@@ -124,9 +116,6 @@ class Player:
             rotz = pyrr.matrix44.create_from_z_rotation(self.camera.rot[2])
             rotx = pyrr.matrix44.create_from_x_rotation(self.camera.rot[0])
             rot = np.matmul(np.matmul(pyrr.matrix44.create_from_y_rotation(self.camera.rot[1]),rotz),rotx)
-        #rotz = pyrr.matrix44.create_from_z_rotation(a*math.sin(b))
-        #rotx = pyrr.matrix44.create_from_x_rotation(a*math.cos(b))
-        #rot = np.matmul(np.matmul(rotz,rotx),pyrr.matrix44.create_from_y_rotation(b))
         self.camModel = np.matmul(rot,np.transpose(pyrr.matrix44.create_from_translation(np.array(self.camPosition))))
         
     

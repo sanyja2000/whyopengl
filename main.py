@@ -41,8 +41,7 @@ class Game:
         glutInit()
         glutInitDisplayMode(GLUT_RGBA)
 
-        self.knownCards = 0
-
+        
         OPENGL_VERSION = 3
 
         if OPENGL_VERSION == 3:
@@ -93,8 +92,7 @@ class Game:
             self.shaderHandler.loadShader("map","shaders/2.1/vertex_new_room.shader","shaders/2.1/fragment_map_infested.shader")
             self.shaderHandler.loadShader("font","shaders/2.1/vertex_font.shader","shaders/2.1/fragment_font.shader")
             self.shaderHandler.loadShader("menuBg","shaders/2.1/vertex_new.shader","shaders/2.1/menuBg.shader")
-        #print("Error: ")
-        #print(glGetProgramInfoLog(self.shader.RendererId))
+
 
         self.fontHandler = FontHandler(self.shaderHandler.getShader("font"))
 
@@ -122,13 +120,11 @@ class Game:
         
         self.noteblocks = []
 
-        #self.mp = MapLoader("maps/test2.json")
-
         self.mp = MapLoader("maps/menu.json",self.player,unlockedCards=self.knownCards)
 
         self.loopCounter = 200
-        #self.audioSounds = ["res/audio/lastchristmas_drum.wav","res/audio/lastchristmas_bass.wav","res/audio/lastchristmas_chords.wav","res/audio/lastchristmas_melody.wav"]
 
+        self.knownCards = 0
 
         glutMainLoop()
     def errorMsg(self, *args):
@@ -231,7 +227,6 @@ class Game:
             mouseX = constrain(mouseX, -1.5,1.5)
             mouseY = constrain(mouseY, -0.75,0.75)
             cur.model.SetPosition([-0.1,mouseY,mouseX])
-            #print(self.inputHandler.mouseX,self.inputHandler.mouseY)
             for x in cards:
                 x.isActive = False
             if(cur.model.pos[2]<-0.6 and cur.model.pos[1]>-0.5 and cur.model.pos[1]<0.5):
@@ -247,11 +242,9 @@ class Game:
         mapObj = self.mp.getObject("Map1")
         if mapObj:
             temparr = []
-
             if card != None and hasattr(card,"openTime"):
                 temparr.append([0,-10,0,(now-card.openTime)*70/22])
             mapObj.clearedPoints = np.array(temparr)
-
 
 
         self.renderer.Clear()
@@ -264,9 +257,6 @@ class Game:
             self.player.lastWalkSound = self.player.distanceTraveled
             self.audioHandler.playSound("res/audio/walksound.wav")
         self.player.update(self.FPSCounter.deltaTime,self.inputHandler)
-        if self.player.fallSound:
-            self.audioHandler.playSound("res/audio/fallsound.wav")
-            self.player.fallSound = False
         viewMat = np.matmul(self.proj,self.player.camModel)
 
         popupText = ""
@@ -317,7 +307,6 @@ class Game:
         if solvedPuzzles == puzzleCount:
             if not card.opened and playingSound == 0:
                 card.openTime = now
-                
                 card.open()
         
         self.fontHandler.drawText(popupText,-1*len(popupText)/50,-0.6,0.05,self.renderer)
