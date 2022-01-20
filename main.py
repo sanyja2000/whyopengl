@@ -5,7 +5,7 @@ from ctypes import c_void_p, pointer, sizeof, c_float
 import numpy as np
 import sys, math
 import time
-from engine.renderer import VertexBuffer, IndexBuffer, VertexArray, VertexBufferLayout, Shader, Renderer, Texture, Camera, FPSCounter, ShaderHandler
+from engine.renderer import VertexBuffer, IndexBuffer, VertexArray, VertexBufferLayout, Shader, Renderer, Texture, FPSCounter, ShaderHandler
 from inputHandler import InputHandler
 from playerController import Player
 from engine.audioHandler import AudioHandler
@@ -120,11 +120,11 @@ class Game:
         
         self.noteblocks = []
 
+        self.knownCards = 0
+
         self.mp = MapLoader("maps/menu.json",self.player,unlockedCards=self.knownCards)
 
         self.loopCounter = 200
-
-        self.knownCards = 0
 
         glutMainLoop()
     def errorMsg(self, *args):
