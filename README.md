@@ -46,3 +46,5 @@ Now you should be able to run the project.
 Type 
 ```python main.py```
 when in the main folder of the project.
+
+More details can be found in the pdf in the main folder.
